@@ -1,0 +1,582 @@
+---
+title: "Categorical Analysis of Loyola Ramblers Games (2016 - present)"
+author: "Charles Hwang"
+date: "4/25/2022"
+output: pdf_document
+---
+The dataset I chose for this project is the game data for all head-to-head Loyola Ramblers programs from the beginning of the Fall 2016 through April 24, 2022. This includes women's softball and both women's and men's soccer, basketball, and volleyball, but excludes competitions with multiple teams by nature (cross country, track and field, golf, dance, cheer, and spirit teams). I compiled the dataset myself from the various public results webpages on the athletic department website (<https://www.loyolaramblers.com>) and there are 1,171 games in total. I recorded 15 variables: (1) team, (2) season, (3) type of game (regular season, conference tournament, postseason, etc.), (4) location (home, away, or neutral), (5) opponent, (6) opponent conference, (7) day of week, (8) month, (9) outcome (win, draw, or loss), (10) score for and (11) against, (12) length (regulation vs. overtime, etc.)[^1], (13) outcome of previous match, (14) win/loss streak prior to game[^2], and (15) whether or not I attended.
+
+If (5) opponents' names changed, they were entered under the same name if they were functionally representing the same university.[^3] One of the many challenges faced was regarding (6) conference, since conferences vary by sport (meaning athletic departments are in different conferences depending on the sport), especially in men's volleyball and men's soccer. Several opponents also changed conferences between the game and this project, so I recorded the opponent's conference at the time of the game. Non-Division I opponents were recorded as the division/association and the conference (for example, an NCAA Division II opponent in the GLVC is "DIIGLVC" and an NAIA opponent in the CCAC is "NAIACCAC"). Finally, some opponents were independent (their team did not have a conference) and I recorded them as such. (8) Month was coded as a number for potential quantitative analysis if desired.
+
+After manually entering variables 1-12 and 14-15 in an Excel spreadsheet, I conducted some basic accuracy checks, like ensuring there was no missing data and that (3) type, (4) location, (7) day, (9) outcome, and (15) attendance only had the possible levels listed. I also checked to make sure the opponents and conferences were correct by sorting and inspecting the columns. After exporting the spreadsheet as a `.csv` file and reading it into `R`, I set several variables as factors. I also split the (14) streak variable and created a new variable for (13) previous outcome (**Figure 1**).
+
+Going into the project, I didn't have any specific questions or hypotheses to explore; I was mainly planning on creating and analyzing the dataset and finding interesting things to look at. After doing so, the main questions I had were:
+
+1. Which variable(s) are the most significant for each team?
+2. Did each team perform differently during the seasons before, after, and the successive season after the onset of the COVID-19 pandemic?
+3. For teams that had a change in the head coaching position during the timeframe of the data, did those teams perform differently before and after the change?
+4. Do teams perform differently at home than away?
+5. Do teams perform differently when I attend?
+
+I first decided to create generalized linear models (GLM) using stepwise regression for each team and (9) outcome as the dependent variable to see which variables are the most significant. I ran models for each team except soccer (more information in the conclusion) and the results can be found in **Figures 2 through 6**. I excluded (10) score for and (11) against because they would be perfect predictors of (9) outcome. I also excluded (5) opponent and (6) conference from several models because there were too many levels in each to be practical in a model. I found that several levels for (2) season were in almost all of the final models, which suggested variation in results between seasons and some significance in determining outcome. I ran stepwise regression excluding (2) season from the initial model and found the final models to be different (**Figures 2b**, **3b**, and **4b**). Based on prior knowledge of each team, most of the variables in the models made sense to me, but further analysis and discussion of the reasoning for each model would be too lengthy to include in this paper.
+
+I then sought to analyze whether teams performed differently before, after, and the season after the onset of the COVID-19 pandemic.[^4] Since win percentage is between 0 and 1 and there were three different percentages for each team, a "round-robin" of three two-proportion $z$-test for each team appeared to be the most effective test. After running all $7*3=21$ tests, I found that most teams did not perform differently between these three seasons (**Figures 7 through 13**). The exceptions are with the men's volleyball ($p=0.04106$) and softball ($p=0.040518$) teams, both between the 2020 and 2021 seasons. However, the 2020 seasons of both teams were suspended due to the pandemic which cancelled games that may have changed this result. The 2020 men's volleyball team also performed poorly prior to the suspension which may not be attributable to the pandemic.
+
+In answering the third question, three different teams[^5] had a change in the head coaching position during the timeframe of this data: women's volleyball after the 2017 season, softball after the 2019 season, and men's basketball after the 2020-21 season. I again used two-proportion $z$-tests to compare the win percentages of all games under the old head coach versus the win percentages of all games under the new (current) head coach. I found that the win percentage for the women's volleyball team increased (**Figure 14a**), the win percentage for the men's basketball did not have any statistically significant change (**Figure 14c**), and the win percentage for the softball team actually decreased (**Figure 14b**), but not at a statistically significant level ($p=0.07368$). Since the 2020 season was the first season under the new head coach for softball, this may have served as a proxy for pre- and post-pandemic performance.
+
+It seemed apparent with the fourth question that teams perform better at home than away, but I wanted to see the statistical strength of this relationship/association. Since there were two variables, I ran a $\chi^2$-test on (9) outcome and (4) location with the entire dataset and found that there was strong evidence teams performed better at home ($p<0.000000001$) and I created a mosaic plot to illustrate this (**Figure 16**). However, `R` produced a warning for the `chisq.test()` function and I noticed in the two-way frequency table (**Figure 15**) that there were $0<5$ draws at a neutral venue, which violated the expected value assumption for a $\chi^2$-test. In thinking about how to proceed, I considered several options in reordering the data but ultimately chose to count neutral games as away games, as they tend to act like "away" games for both teams in terms of facilities, travel, familiarity, fan support, etc. I reran the $\chi^2$-test (**Figure 17**) and found similar strong evidence of better team performance at home ($p<0.00000001$).
+
+Finally, the final and potentially most controversial hypothesis question was posed as personal curiosity but also a form of validation of some sorts. The (9) outcome and (15) attendance variables were again presented most practically as a frequency table and the $\chi^2$-test (**Figure 18**) confirmed my intuition about helping teams perform better ($p=0.0007813$). The mosaic plot (**Figure 19**) also visualized this significant difference. However, the expected value assumption was again violated as I have attended $0<5$ draws in my six years at Loyola (as I have not attended many soccer games). The nature of the test meant I had to reallocate draws and I eventually decided to list them as wins when running the modified test (**Figure 20**), which output the same decision ($p=0.001271$). Because of the complications with assumptions, I also ran a Fisher's exact test on the same data (**Figure 21**) which concurred with the previous $\chi^2$-tests ($p=0.00131$).
+
+Some of the advantages that I realized when compiling this dataset was a familiarity and interest in the data. I was knowledgeable about the subject which made it easier to determine variables and analyses. Almost all of the data were also all publicly and conveniently available with a minimal number of clicks which made the process easier. Other athletic departments do not maintain accurate historical records or statistics of games from previous seasons, due to lack of resources or indifference, which can make it difficult to find information from older games.
+
+One of the main disadvantages of this process included the manual labor involved in inputting all the data, which was tedious and took several hours but also risked human error in incorrectly recording variables and games, getting distracted, etc. Additionally, the athletic department website has been renovated a few times since 2016, causing some data to be not immediately available, especially for older games. For example, in checking for (13) length, summaries of some games will show the score and whether there was overtime, but others (especially softball) are not listed in the score and instead only shown when the row for the game was expanded. Although the data were still publicly available, it took extra time to expand the row to check for length which can compound when checking so many games, and I did not discover this until midway through which could have led to some inaccurate data. The links to recaps and box scores prior to 2017 also tended to be dead returning a `404` error.
+
+Other disadvantages included not remembering whether I attended a specific game. Although I previously remembered specific details of every game I attended (I could recall the score, statistics, emotions, etc.) prior to the pandemic, I never recorded this information anywhere and two years had passed since this information was useful/practical to me. I know the number of games I attended[^6] but struggled to recall whether I attended certain games and had to verify video, class schedules, social media, etc. which took a lot of extra time. Some of the opponent logos for older games (and rarely, some statistics) were also incorrect which led to some initial confusion.
+
+Future analysis could include additional variables, like days since previous game, date, time, duration, attendance, national poll rankings, distance from Loyola, ticket price, whether there was a promotion/giveaway, etc. Additional statistical tests could also be run. I do not believe I was able to find a way to code draws for soccer which is why there were no GLM for those teams. Additional research or different statistical methods could produce suitable models for them. I also realized during the project that the randomness and independence assumptions for some of the tests may not be completely satisfied. Lastly, I felt I didn't have enough time to explain the reasoning behind the results, although I could infer it based on context and prior knowledge when reviewing the output.
+
+I felt I chose several different types of variables (factors with different numbers of levels and quantitative) to record and analyze. Despite the high amount of work spent during a short time period, this project was a good categorical analysis of the data.
+
+[^1]: This varies by sport. For soccer, NCAA rules (prior to this month) stipulated two 10-minute periods of sudden death overtime (and penalty kicks afterwards for conference tournament and postseason matches), so the levels were "FT" (regulation), "OT", "2OT", and "PK". Volleyball matches are best-of-five sets, so I entered the number of sets (3, 4, or 5). Basketball uses five-minute overtime periods, so I entered "RT" for regulation and "OT", "2OT", etc. Softball has a mercy rule after 5 innings, so games can actually be shorter *or* longer than 7 innings.
+
+[^2]: I used streak prior to game because I did not feel the streak after the game affected the game itself. If it was the first game of the season, I listed the ongoing streak from the previous season.
+
+[^3]: For example, IPFW became Fort Wayne in 2016 and Purdue Fort Wayne in 2018, and all instances of them in the data were recorded as "Purdue Fort Wayne".
+
+[^4]: For soccer and women's volleyball, this was the 2019, 2020, and 2021 seasons. For basketball, this was the 2019-20, 2020-21, and 2021-22 seasons. For men's volleyball and softball, this was the 2020, 2021, and 2022 seasons.
+
+[^5]: There were also head coaching changes in men's soccer, women's basketball, and men's volleyball in 2022, but neither team have played any games under the new head coach yet.
+
+[^6]: "Officially" 136, because I chose to only count games if I was present at the end of the game (i.e., not counting games if I left early), with some discretion. However, the final count in the spreadsheet is 137.
+
+## Appendix
+
+### Figure 1
+
+```{r Figure 1, message=FALSE}
+rm(list=ls())
+L<-read.csv("/Users/newuser/Desktop/Notes/Graduate/STAT 410 - Categorical Data Analysis/LUC.csv",header=TRUE)
+L$Sport<-as.factor(L$Sport)
+L$Season<-as.factor(L$Season)
+L$Type<-as.factor(L$Type)
+L$Location<-as.factor(L$Location)
+L$Conference<-as.factor(L$Conference)
+L$Day<-as.factor(L$Day)
+#L$Outcome<-as.factor(L$Outcome)
+L$Length<-as.factor(L$Length)
+L$Attend<-as.factor(L$Attend)
+library(tidyr)
+L<-L %>% separate(StreakBeforeMatch,c("StreakBefore","StreakNum"),sep=cumsum(c(1,1)))
+L$StreakNum<-as.numeric(L$StreakNum)
+```
+
+### Figure 2a
+
+```{r Figure 2a, message=FALSE}
+summary(step(glm(Outcome~Season+Type+Location+Conference+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="WVB",]),trace=0))
+```
+
+### Figure 2b
+
+```{r Figure 2b}
+summary(step(glm(Outcome~Type+Location+Conference+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="WVB",]),trace=0))
+```
+
+### Figure 3a
+
+```{r Figure 3a, warning=FALSE}
+summary(step(glm(Outcome~Season+Type+Location+Opponent+Conference+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="MBB",]),trace=0))
+```
+
+### Figure 3b
+
+```{r Figure 3b, warning=FALSE}
+summary(step(glm(Outcome~Type+Location+Opponent+Conference+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="MBB",]),trace=0))
+```
+
+### Figure 4a
+
+```{r Figure 4a}
+summary(step(glm(Outcome~Season+Type+Location+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="WBB",]),trace=0))
+```
+
+### Figure 4b
+
+```{r Figure 4b}
+summary(step(glm(Outcome~Type+Location+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="WBB",]),trace=0))
+```
+
+### Figure 5
+
+```{r Figure 5}
+summary(step(glm(Outcome~Season+Type+Location+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="MVB",]),trace=0))
+```
+
+### Figure 6
+
+```{r Figure 6, warning=FALSE}
+summary(step(glm(Outcome~Season+Type+Location+Opponent+Conference+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="SB",]),trace=0))
+```
+
+### Figure 6 1/2
+
+```{r Figure 6 1/2, warning=FALSE}
+L$OutcomeNew<-as.numeric(L$Outcome=="W")
+fit1<-step(glm(OutcomeNew~Season+Type+Location+Conference+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="WVB",]),trace=0)
+fit2<-step(glm(OutcomeNew~Type+Location+Conference+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="WVB",]),trace=0)
+fit3<-step(glm(OutcomeNew~Season+Type+Location+Opponent+Conference+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="MBB",]),trace=0)
+fit4<-step(glm(OutcomeNew~Type+Location+Opponent+Conference+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="MBB",]),trace=0)
+fit5<-step(glm(OutcomeNew~Season+Type+Location+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="WBB",]),trace=0)
+fit6<-step(glm(OutcomeNew~Type+Location+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="WBB",]),trace=0)
+fit7<-step(glm(OutcomeNew~Season+Type+Location+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="MVB",]),trace=0)
+fit8<-step(glm(OutcomeNew~Season+Type+Location+Opponent+Conference+Day+Month+Length+StreakBefore+StreakNum+Attend,family=binomial(link="logit"),data=L[L$Sport=="SB",]),trace=0)
+library(pROC)
+par(mfrow=c(2,4))
+plot.roc(roc(Outcome~fitted(fit1),data=L[L$Sport=="WVB",]),legacy.axes=TRUE,main="WVB")
+plot.roc(roc(Outcome~fitted(fit2),data=L[L$Sport=="WVB",]),legacy.axes=TRUE,main="WVB (without Season)")
+plot.roc(roc(Outcome~fitted(fit3),data=L[L$Sport=="MBB",]),legacy.axes=TRUE,main="MBB")
+plot.roc(roc(Outcome~fitted(fit4),data=L[L$Sport=="MBB",]),legacy.axes=TRUE,main="MBB (without Season)")
+plot.roc(roc(Outcome~fitted(fit5),data=L[L$Sport=="WBB",]),legacy.axes=TRUE,main="WBB")
+plot.roc(roc(Outcome~fitted(fit6),data=L[L$Sport=="WBB",]),legacy.axes=TRUE,main="WBB (without Season)")
+plot.roc(roc(Outcome~fitted(fit7),data=L[L$Sport=="MVB",]),legacy.axes=TRUE,main="MVB")
+plot.roc(roc(Outcome~fitted(fit8),data=L[L$Sport=="SB",]),legacy.axes=TRUE,main="SB")
+auc(roc(Outcome~fitted(fit1),data=L[L$Sport=="WVB",]))
+auc(roc(Outcome~fitted(fit2),data=L[L$Sport=="WVB",]))
+auc(roc(Outcome~fitted(fit3),data=L[L$Sport=="MBB",]))
+auc(roc(Outcome~fitted(fit4),data=L[L$Sport=="MBB",]))
+auc(roc(Outcome~fitted(fit5),data=L[L$Sport=="WBB",]))
+auc(roc(Outcome~fitted(fit6),data=L[L$Sport=="WBB",]))
+auc(roc(Outcome~fitted(fit7),data=L[L$Sport=="MVB",]))
+auc(roc(Outcome~fitted(fit8),data=L[L$Sport=="SB",]))
+```
+
+### Figure 7a
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{MSOC,B}=\pi_{MSOC,D}$
+
+$H_A:\pi_{MSOC,B}\neq\pi_{MSOC,D}$
+
+```{r Figure 7a, warning=FALSE}
+msb<-sum(L[L$Sport=="MSOC" & L$Season=="2019","Outcome"]=="W")+sum(L[L$Sport=="MSOC" & L$Season=="2019","Outcome"]=="D")/2
+msd<-sum(L[L$Sport=="MSOC" & L$Season=="2020","Outcome"]=="W")+sum(L[L$Sport=="MSOC" & L$Season=="2020","Outcome"]=="D")/2
+msbn<-nrow(L[L$Sport=="MSOC" & L$Season=="2019",])
+msdn<-nrow(L[L$Sport=="MSOC" & L$Season=="2020",])
+prop.test(c(msb,msd),c(msbn,msdn),correct=FALSE)
+```
+
+### Figure 7b
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{MSOC,B}=\pi_{MSOC,A}$
+
+$H_A:\pi_{MSOC,B}\neq\pi_{MSOC,A}$
+
+```{r Figure 7b}
+msa<-sum(L[L$Sport=="MSOC" & L$Season=="2021" | L$Sport=="MSOC" & L$Season=="2022","Outcome"]=="W")+sum(L[L$Sport=="MSOC" & L$Season=="2021" | L$Sport=="MSOC" & L$Season=="2022","Outcome"]=="D")/2
+msan<-nrow(L[L$Sport=="MSOC" & L$Season=="2021" | L$Sport=="MSOC" & L$Season=="2022",])
+prop.test(c(msb,msa),c(msbn,msan),correct=FALSE)
+```
+
+### Figure 7c
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{MSOC,D}=\pi_{MSOC,A}$
+
+$H_A:\pi_{MSOC,D}\neq\pi_{MSOC,A}$
+
+```{r Figure 7c}
+prop.test(c(msd,msa),c(msdn,msan),correct=FALSE)
+```
+
+### Figure 8a
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{WSOC,B}=\pi_{WSOC,D}$
+
+$H_A:\pi_{WSOC,B}\neq\pi_{WSOC,D}$
+
+```{r Figure 8a, warning=FALSE}
+wsb<-sum(L[L$Sport=="WSOC" & L$Season=="2019","Outcome"]=="W")+sum(L[L$Sport=="WSOC" & L$Season=="2019","Outcome"]=="D")/2
+wsd<-sum(L[L$Sport=="WSOC" & L$Season=="2020","Outcome"]=="W")+sum(L[L$Sport=="WSOC" & L$Season=="2020","Outcome"]=="D")/2
+wsbn<-nrow(L[L$Sport=="WSOC" & L$Season=="2019",])
+wsdn<-nrow(L[L$Sport=="WSOC" & L$Season=="2020",])
+prop.test(c(wsb,wsd),c(wsbn,wsdn),correct=FALSE)
+```
+
+### Figure 8b
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{WSOC,B}=\pi_{WSOC,A}$
+
+$H_A:\pi_{WSOC,B}\neq\pi_{WSOC,A}$
+
+```{r Figure 8b, warning=FALSE}
+wsa<-sum(L[L$Sport=="WSOC" & L$Season=="2021" | L$Sport=="WSOC" & L$Season=="2022","Outcome"]=="W")+sum(L[L$Sport=="WSOC" & L$Season=="2021" | L$Sport=="WSOC" & L$Season=="2022","Outcome"]=="D")/2
+wsan<-nrow(L[L$Sport=="WSOC" & L$Season=="2021" | L$Sport=="WSOC" & L$Season=="2022",])
+prop.test(c(wsb,wsa),c(wsbn,wsan),correct=FALSE)
+```
+
+### Figure 8c
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{WSOC,D}=\pi_{WSOC,A}$
+
+$H_A:\pi_{WSOC,D}\neq\pi_{WSOC,A}$
+
+```{r Figure 8c, warning=FALSE}
+prop.test(c(wsd,wsa),c(wsdn,wsan),correct=FALSE)
+```
+
+### Figure 9a
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{WVB,B}=\pi_{WVB,D}$
+
+$H_A:\pi_{WVB,B}\neq\pi_{WVB,D}$
+
+```{r Figure 9a}
+wvb<-sum(L[L$Sport=="WVB" & L$Season=="2019","Outcome"]=="W")
+wvd<-sum(L[L$Sport=="WVB" & L$Season=="2020","Outcome"]=="W")
+wvbn<-nrow(L[L$Sport=="WVB" & L$Season=="2019",])
+wvdn<-nrow(L[L$Sport=="WVB" & L$Season=="2020",])
+prop.test(c(wvb,wvd),c(wvbn,wvdn),correct=FALSE)
+```
+
+### Figure 9b
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{WVB,B}=\pi_{WVB,A}$
+
+$H_A:\pi_{WVB,B}\neq\pi_{WVB,A}$
+
+```{r Figure 9b}
+wva<-sum(L[L$Sport=="WVB" & L$Season=="2021" | L$Sport=="WVB" & L$Season=="2022","Outcome"]=="W")
+wvan<-nrow(L[L$Sport=="WVB" & L$Season=="2021" | L$Sport=="WVB" & L$Season=="2022",])
+prop.test(c(wvb,wva),c(wvbn,wvan),correct=FALSE)
+```
+
+### Figure 9c
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{WVB,D}=\pi_{WVB,A}$
+
+$H_A:\pi_{WVB,D}\neq\pi_{WVB,A}$
+
+```{r Figure 9c}
+prop.test(c(wvd,wva),c(wvdn,wvan),correct=FALSE)
+```
+
+### Figure 10a
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{MBB,B}=\pi_{MBB,D}$
+
+$H_A:\pi_{MBB,B}\neq\pi_{MBB,D}$
+
+```{r Figure 10a}
+mbb<-sum(L[L$Sport=="MBB" & L$Season=="2019-20","Outcome"]=="W")
+mbd<-sum(L[L$Sport=="MBB" & L$Season=="2020-21","Outcome"]=="W")
+mbbn<-nrow(L[L$Sport=="MBB" & L$Season=="2019-20",])
+mbdn<-nrow(L[L$Sport=="MBB" & L$Season=="2020-21",])
+prop.test(c(mbb,mbd),c(mbbn,mbdn),correct=FALSE)
+```
+
+### Figure 10b
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{MBB,B}=\pi_{MBB,A}$
+
+$H_A:\pi_{MBB,B}\neq\pi_{MBB,A}$
+
+```{r Figure 10b}
+mba<-sum(L[L$Sport=="MBB" & L$Season=="2021-22","Outcome"]=="W")
+mban<-nrow(L[L$Sport=="MBB" & L$Season=="2021-22",])
+prop.test(c(mbb,mba),c(mbbn,mban),correct=FALSE)
+```
+
+### Figure 10c
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{MBB,D}=\pi_{MBB,A}$
+
+$H_A:\pi_{MBB,D}\neq\pi_{MBB,A}$
+
+```{r Figure 10c}
+prop.test(c(mbd,mba),c(mbdn,mban),correct=FALSE)
+```
+
+### Figure 11a
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{WBB,B}=\pi_{WBB,D}$
+
+$H_A:\pi_{WBB,B}\neq\pi_{WBB,D}$
+
+```{r Figure 11}
+wbb<-sum(L[L$Sport=="WBB" & L$Season=="2019-20","Outcome"]=="W")
+wbd<-sum(L[L$Sport=="WBB" & L$Season=="2020-21","Outcome"]=="W")
+wbbn<-nrow(L[L$Sport=="WBB" & L$Season=="2019-20",])
+wbdn<-nrow(L[L$Sport=="WBB" & L$Season=="2020-21",])
+prop.test(c(wbb,wbd),c(wbbn,wbdn),correct=FALSE)
+```
+
+### Figure 11b
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{WBB,B}=\pi_{WBB,A}$
+
+$H_A:\pi_{WBB,B}\neq\pi_{WBB,A}$
+
+```{r Figure 11b}
+wba<-sum(L[L$Sport=="WBB" & L$Season=="2021-22","Outcome"]=="W")
+wban<-nrow(L[L$Sport=="WBB" & L$Season=="2021-22",])
+prop.test(c(wbb,wba),c(wbbn,wban),correct=FALSE)
+```
+
+### Figure 11c
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{WBB,D}=\pi_{WBB,A}$
+
+$H_A:\pi_{WBB,D}\neq\pi_{WBB,A}$
+
+```{r Figure 11c}
+prop.test(c(wbd,wba),c(wbdn,wban),correct=FALSE)
+```
+
+### Figure 12a
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{MVB,B}=\pi_{MVB,D}$
+
+$H_A:\pi_{MVB,B}\neq\pi_{MVB,D}$
+
+```{r Figure 12a}
+mvb<-sum(L[L$Sport=="MVB" & L$Season=="2020","Outcome"]=="W")
+mvd<-sum(L[L$Sport=="MVB" & L$Season=="2021","Outcome"]=="W")
+mvbn<-nrow(L[L$Sport=="MVB" & L$Season=="2020",])
+mvdn<-nrow(L[L$Sport=="MVB" & L$Season=="2021",])
+prop.test(c(mvb,mvd),c(mvbn,mvdn),correct=FALSE)
+```
+
+### Figure 12b
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{MVB,B}=\pi_{MVB,A}$
+
+$H_A:\pi_{MVB,B}\neq\pi_{MVB,A}$
+
+```{r Figure 12b}
+mva<-sum(L[L$Sport=="MVB" & L$Season=="2022","Outcome"]=="W")
+mvan<-nrow(L[L$Sport=="MVB" & L$Season=="2022",])
+prop.test(c(mvb,mva),c(mvbn,mvan),correct=FALSE)
+```
+
+### Figure 12c
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{MVB,D}=\pi_{MVB,A}$
+
+$H_A:\pi_{MVB,D}\neq\pi_{MVB,A}$
+
+```{r Figure 12c}
+prop.test(c(mvd,mva),c(mvdn,mvan),correct=FALSE)
+```
+
+### Figure 13a
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{SB,B}=\pi_{SB,D}$
+
+$H_A:\pi_{SB,B}\neq\pi_{SB,D}$
+
+```{r Figure 13a}
+sbb<-sum(L[L$Sport=="SB" & L$Season=="2020","Outcome"]=="W")
+sbd<-sum(L[L$Sport=="SB" & L$Season=="2021","Outcome"]=="W")
+sbbn<-nrow(L[L$Sport=="SB" & L$Season=="2020",])
+sbdn<-nrow(L[L$Sport=="SB" & L$Season=="2021",])
+prop.test(c(sbb,sbd),c(sbbn,sbdn),correct=FALSE)
+```
+
+### Figure 13b
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{SB,B}=\pi_{SB,A}$
+
+$H_A:\pi_{SB,B}\neq\pi_{SB,A}$
+
+```{r Figure 13b}
+sba<-sum(L[L$Sport=="SB" & L$Season=="2022","Outcome"]=="W")
+sban<-nrow(L[L$Sport=="SB" & L$Season=="2022",])
+prop.test(c(sbb,sba),c(sbbn,sban),correct=FALSE)$p.value
+```
+
+### Figure 13c
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{SB,D}=\pi_{SB,A}$
+
+$H_A:\pi_{SB,D}\neq\pi_{SB,A}$
+
+```{r Figure 13c}
+prop.test(c(sbd,sba),c(sbdn,sban),correct=FALSE)$p.value
+```
+
+### Figure 14a
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{WVB,O}=\pi_{WVB,C}$
+
+$H_A:\pi_{WVB,O}\neq\pi_{WVB,C}$
+
+```{r Figure 14a}
+wvo<-sum(L[L$Sport=="WVB" & L$Season=="2016" | L$Sport=="WVB" & L$Season=="2017","Outcome"]=="W")
+wvc<-sum(L[L$Sport=="WVB" & L$Season!="2016" & L$Season!="2017","Outcome"]=="W")
+wvon<-nrow(L[L$Sport=="WVB" & L$Season=="2016" | L$Sport=="WVB" & L$Season=="2017",])
+wvcn<-nrow(L[L$Sport=="WVB" & L$Season!="2016" & L$Season!="2017",])
+prop.test(c(wvo,wvc),c(wvon,wvcn),correct=FALSE)$conf.int
+```
+
+### Figure 14b
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{SB,O}=\pi_{SB,C}$
+
+$H_A:\pi_{SB,O}\neq\pi_{SB,C}$
+
+```{r Figure 14b}
+sbo<-sum(L[L$Sport=="SB" & L$Season!="2020" & L$Season!="2021" & L$Season!="2022","Outcome"]=="W")
+sbc<-sum(L[L$Sport=="SB" & L$Season!="2017" & L$Season!="2018" & L$Season!="2019","Outcome"]=="W")
+sbon<-nrow(L[L$Sport=="SB" & L$Season!="2020" & L$Season!="2021" & L$Season!="2022",])
+sbcn<-nrow(L[L$Sport=="SB" & L$Season!="2017" & L$Season!="2018" & L$Season!="2019",])
+prop.test(c(sbo,sbc),c(sbon,sbcn),correct=FALSE)
+```
+
+### Figure 14c
+
+Two-Proportion $z$-test ($\alpha=0.05$)
+
+$H_0:\pi_{MBB,O}=\pi_{MBB,C}$
+
+$H_A:\pi_{MBB,O}\neq\pi_{MBB,C}$
+
+```{r Figure 14c}
+mbo<-sum(L[L$Sport=="MBB" & L$Season!="2021-22","Outcome"]=="W")
+mbc<-sum(L[L$Sport=="MBB" & L$Season=="2021-22","Outcome"]=="W")
+mbon<-nrow(L[L$Sport=="MBB" & L$Season!="2021-22",])
+mbcn<-nrow(L[L$Sport=="MBB" & L$Season=="2021-22",])
+prop.test(c(mbo,mbc),c(mbon,mbcn),correct=FALSE)
+```
+
+### Figure 15
+
+$\chi^2$-test of Independence ($\alpha=0.01$)
+
+$H_0$: There is no relationship between outcome and location
+
+$H_A$: There is a relationship between outcome and location
+
+```{r Figure 15}
+Location<-factor(L$Location,c("H","N","A"))
+Outcome<-factor(L$Outcome,c("W","D","L"))
+xtabs(~Location+Outcome)
+chisq.test(xtabs(~Location+Outcome),correct=FALSE)
+```
+
+### Figure 16
+
+```{r Figure 16, message=FALSE}
+library(vcd)
+mosaic(xtabs(~Location+Outcome))
+```
+
+### Figure 17
+
+$\chi^2$-test of Independence ($\alpha=0.01$)
+
+$H_0$: There is no relationship between outcome and location
+
+$H_A$: There is a relationship between outcome and location
+
+```{r Figure 17}
+LocationComb<-factor(L$Location,c("H","A"))
+LocationComb[is.na(factor(L$Location,c("H","A")))]<-"A"
+xtabs(~LocationComb+Outcome)
+chisq.test(xtabs(~LocationComb+Outcome),correct=FALSE)
+```
+
+### Figure 18
+
+$\chi^2$-test of Independence ($\alpha=0.01$)
+
+$H_0$: There is no relationship between outcome and attendance
+
+$H_A$: There is a relationship between outcome and attendance
+
+```{r Figure 18}
+Attend<-factor(L$Attend,c("Y","N"))
+Outcome<-factor(L$Outcome,c("W","D","L"))
+xtabs(~Attend+Outcome)
+chisq.test(xtabs(~Attend+Outcome),correct=FALSE)
+```
+
+### Figure 19
+
+```{r Figure 19}
+mosaic(xtabs(~Attend+Outcome))
+```
+
+### Figure 20
+
+$\chi^2$-test of Independence ($\alpha=0.01$)
+
+$H_0$: There is no relationship between outcome and attendance
+
+$H_A$: There is a relationship between outcome and attendance
+
+```{r Figure 20}
+L[L$Attend=="Y" & L$Outcome=="D","Outcome"]<-"L"
+L[L$Attend=="N" & L$Outcome=="D","Outcome"]<-"W"
+OutcomeComb<-factor(L$Outcome,c("W","L"))
+xtabs(~Attend+OutcomeComb)
+chisq.test(xtabs(~Attend+OutcomeComb),correct=FALSE)
+```
+
+### Figure 20 1/2
+
+```{r Figure 20 1/2}
+library(AMR)
+g.test(xtabs(~LocationComb+Outcome))
+g.test(xtabs(~Attend+OutcomeComb))
+```
+
+### Figure 21
+
+```{r Figure 21}
+fisher.test(xtabs(~Attend+OutcomeComb))
+```
