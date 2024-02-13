@@ -1,0 +1,38 @@
+---
+title: "Homework 4"
+author: "Charles Hwang"
+date: "6/28/2022"
+output: pdf_document
+---
+Charles Hwang
+
+Dr. Matthews
+
+STAT 488-001
+
+28 June 2022
+
+## Problem 6.7
+
+### Problem 6.7(a)
+
+```{r Problem 6.7(a)}
+rm(list=ls())
+set.seed(286)
+s<-(100-1)*1^2/rchisq(1,100-1)
+ppd<-apply(replicate(1000,abs(rnorm(100,rnorm(1,5.1,sqrt(s/100)),sqrt(s)))),2,max)
+hist(ppd,20,xlab="T(y^rep)",main="Problem 6.7(a) - Histogram of Posterior Predictive of T(y^rep)")
+abline(v=8.1,col="red")
+mean(ppd>8.1)
+```
+
+### Problem 6.7(b)
+
+```{r Problem 6.7(b)}
+plot(0,type="n",xlim=c(-10^5,10^5),main="Problem 6.7(b) - Sketch of Prior Predictive of T(y^rep)")
+abline(0,1/10^5)
+```
+
+### Problem 6.7(c)
+
+Yes, this makes sense conceptually. The problem stated the prior distribution $p(\theta)=\frac{1}{2*10^5}$ was "diffuse" and it had nearly no influence on the data, so it is reasonable that the data are closer to the posterior predictive distribution.
