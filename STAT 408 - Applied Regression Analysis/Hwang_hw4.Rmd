@@ -1,0 +1,196 @@
+---
+title: "Homework 4"
+author: "Charles Hwang"
+date: "11/13/2022"
+output: pdf_document
+---
+Charles Hwang
+
+Dr. Xi
+
+STAT 408-001
+
+2022 November 13
+
+## Problem 1
+
+```{r Problem 1}
+rm(list=ls())
+p<-read.csv("/Users/newuser/Desktop/Notes/Graduate/STAT 408 - Applied Regression Analysis/prostate.csv")
+s<-lm(lpsa~.,data=p)
+```
+
+### Problem 1a
+
+```{r Problem 1a}
+summary(s) # Lecture 10, Slides 5-10
+summary(update(s,.~.-gleason)) # p = 0.7750328
+summary(update(update(s,.~.-gleason),.~.-lcp)) # p = 0.2512688
+summary(update(update(update(s,.~.-gleason),.~.-lcp),.~.-pgg45)) # p = 0.2533092
+summary(update(update(update(update(s,.~.-gleason),.~.-lcp),.~.-pgg45),.~.-age)) # p = 0.1695282
+summary(update(update(update(update(update(s,.~.-gleason),.~.-lcp),.~.-pgg45),.~.-age),.~.-lbph)) #p=.11213
+```
+
+### Problem 1b
+
+```{r Problem 1b}
+step(s) # Lecture 10, Slides 15-16
+summary(lm(lpsa~lcavol+lweight+age+lbph+svi,data=p)) # Summary of "best" model (AIC = -61.37)
+```
+
+### Problem 1c
+
+We can see the two model selection methods do not give us the same result. The model from the backward elimination method at the $\alpha=0.05$ level includes the `lcavol`, `lweight`, and `svi` variables, while the model from the Akaike information criterion (AIC) method includes these and the `age` and `lbph` variables. We can also see the adjusted $r^2$ values for the two models are different (`r summary(lm(lpsa~.-gleason-lcp-pgg45-age-lbph,data=p))$adj.r.squared` vs. `r summary(lm(lpsa~lcavol+lweight+age+lbph+svi,data=p))$adj.r.squared`).
+
+I do not believe it is an issue that the two models are different because it simply illustrates the difference between the two methods. Changing the $\alpha$ level (to $\alpha\geq$ `r summary(update(update(update(update(s,.~.-gleason),.~.-lcp),.~.-pgg45),.~.-age))$coefficients["lbph","Pr(>|t|)"]`) for the backward elimination method would also yield a different model.
+
+## Problem 2
+
+```{r Problem 2}
+a<-read.csv("/Users/newuser/Desktop/Notes/Graduate/STAT 408 - Applied Regression Analysis/aatemp.csv")
+```
+
+### Problem 2a
+
+```{r Problem 2a}
+ty<-lm(temp~year,data=a)
+summary(ty)
+par(mfrow=c(1,2))
+plot(temp~year,main="Temperature of Ann Arbor, MI",data=a)
+abline(ty$coefficients["(Intercept)"],ty$coefficients["year"])
+plot(ty$residuals~ty$fitted.values,xlab="y-hat",ylab="Residuals",main="Residuals vs. Fitted Values")
+abline(h=0)
+```
+
+From the output produced, it is possible there is a linear trend in the data, but it would be rather weak. For example, we can see the adjusted $r^2$ for the model is only `r summary(ty)$adj.r.squared`.
+
+### Problem 2b
+
+```{r Problem 2b}
+cor(tail(ty$residuals,nrow(a)-1),head(ty$residuals,nrow(a)-1)) # Lecture 9, Slide 14
+plot(tail(ty$residuals,nrow(a)-1)~head(ty$residuals,nrow(a)-1))
+```
+
+This output does not change my opinion about the trend. There appears to be weak correlation ($r^2=$ `r cor(tail(ty$residuals,nrow(a)-1),head(ty$residuals,nrow(a)-1))`) between years.
+
+### Problem 2c
+
+```{r Problem 2c}
+summary(lm(temp~year+I(year^2)+I(year^3)+I(year^4)+I(year^5),data=a)) # year^5 = NA
+plot(temp~year,main="Annual Mean Temperature of Ann Arbor, MI (Quintic Model)",data=a)
+lines(a$year,predict(lm(temp~year+I(year^2)+I(year^3)+I(year^4)+I(year^5),data=a)))
+#lines(a$year,predict(loess(temp~year,data=a)),col="blue") # Local regression (LOESS)
+#legend("topleft",c("Quintic","LOESS"),col=c("black","blue"),lty=1)
+```
+
+Observation: The quintic $(\text{year})^5$ term appears as `NA` in the summary output, functionally making this the same as a quartic model. This may be because the values of the year numbers raised to the fifth power are too big. Additionally, the fitted curve looks similar to one from a local regression (LOESS) model.
+
+### Problem 2d
+
+```{r Problem 2d}
+plot(temp~year,main="Annual Mean Temperature of Ann Arbor (Segmented Regression)",data=a)
+abline(v=1930,lty=5) # Lecture 11, Slides 7-13
+ty29<-lm(temp~year,data=a,subset=(year<1930))$coefficients
+ty31<-lm(temp~year,data=a,subset=(year>1930))$coefficients
+segments(1830,ty29["(Intercept)"]+ty29["year"]*1830,1930,ty29["(Intercept)"]+ty29["year"]*1930)
+segments(1930,ty31["(Intercept)"]+ty31["year"]*1930,2010,ty31["(Intercept)"]+ty31["year"]*2010)
+bl<-function(x){ifelse(x<1930,1930-x,0)}
+br<-function(x){ifelse(x>1930,x-1930,0)}
+sm<-lm(temp~bl(year)+br(year),data=a)
+x<-seq(1830,2010)
+lines(x,sm$coefficients[1]+sm$coefficients[2]*bl(x)+sm$coefficients[3]*br(x),lty=2)
+legend("topleft",c("Before 1930/After 1930","Segmented Regression"),lty=1:2,cex=0.9)
+```
+
+It does appear that the temperature trend is different before and after 1930. We can see the model for years before 1930 predicts a mean temperature of approximately `r ty29["(Intercept)"]+ty29["year"]*1930` degrees Fahrenheit for Ann Arbor, Michigan in 1930, while the model for years after 1930 predicts a mean temperature of approximately `r ty31["(Intercept)"]+ty31["year"]*1930` degrees Fahrenheit. The segmented regression model is between the two, predicting a mean temperature of approximately `r sm$coefficients[1]+sm$coefficients[2]*bl(1930)+sm$coefficients[3]*br(1930)` degrees Fahrenheit.[^1] We can see the actual mean temperature in Ann Arbor, Michigan in 1930 was approximately `r a$temp[a$year==1930]` degrees Fahrenheit.
+
+[^1]: Observation: This appears to be an example of Simpson's paradox (<https://en.wikipedia.org/wiki/Simpson's_paradox>). We can see that the data before 1930 and the data after 1930 both individually have negative trends, but when combined, the data have a positive trend overall as indicated by the segmented regression line.
+
+## Problem 3
+
+```{r Problem 3}
+l<-read.csv("/Users/newuser/Desktop/Notes/Graduate/STAT 408 - Applied Regression Analysis/longley.csv")
+```
+
+### Problem 3a
+
+```{r Problem 3a}
+round(cor(l[,-7]),6) # Lecture 11, Slides 21 and 24-25
+```
+
+Looking at the correlation matrix, we can see the `GNP.deflator`, `GNP`, `Year`, and `Population` variables are all extremely highly correlated with one another ($|r|>0.97$). No other pairs of variables are highly correlated with one another to this extent, with `Unemployed` and `Population` having the next highest correlation ($r=$ `r cor(l$Unemployed,l$Population)`).
+
+The `GNP.deflator` and `GNP` variables are extremely highly correlated with each other because the GNP implicit price deflator is calculated using gross national product (GNP). A potential reason that these and the `Population` and `Year` variables are extremely highly correlated with one another is because both GNP and population in the United States increased at a consistent rate from 1947 to 1962 as a result of post-World War II economic production.
+
+### Problem 3b
+
+```{r Problem 3b}
+c<-model.matrix(lm(Employed~.,data=l))[,-1]
+r<-data.frame(rep(NA,6))
+for(i in 1:(length(l)-1)){r[i,1]<-summary(lm(c[,i]~c[,-i]))$r.squared}
+names(r)<-"Adjusted r^2"
+rownames(r)<-colnames(c)
+r
+```
+
+Yes, regressing each predictor on the others results in the same conclusion. We can see there is clearly a lot of collinearity on the variables in the model.
+
+### Problem 3c
+
+```{r Problem 3c}
+cor(l[,c(3:4,6)])
+summary(lm(Employed~Unemployed+Armed.Forces+Year,data=l))
+anova(lm(Employed~Unemployed+Armed.Forces+Year,data=l),lm(Employed~.,data=l))
+```
+
+I removed the `GNP.deflator`, `GNP`, and `Population` variables from the full model $\Omega$ to create a smaller model $\omega$ with only `Unemployed`, `Armed.Forces`, and `Year` as predictors. We can see the strongest correlation in this smaller model is between `Unemployed` and `Year` ($r=$ `r cor(l$Unemployed,l$Year)`), and only one of the four variables highly correlated with one another as seen in Problem 3a is included. I believe this smaller model is better because we can see the comparison-of-models hypothesis test (Lecture 8, Slides 12-14) shows there is insufficient evidence at the $\alpha=0.05$ level ($F=$ `r anova(lm(Employed~Unemployed+Armed.Forces+Year,data=l),lm(Employed~.,data=l))$F[2]`, $p=$ `r anova(lm(Employed~Unemployed+Armed.Forces+Year,data=l),lm(Employed~.,data=l))$'Pr(>F)'[2]`) that the full model $\Omega$ is better than the reduced model $\omega$.
+
+## Problem 4
+
+```{r Problem 4}
+g<-read.csv("/Users/newuser/Desktop/Notes/Graduate/STAT 408 - Applied Regression Analysis/gala.csv")
+gm<-read.csv("/Users/newuser/Desktop/Notes/Graduate/STAT 408 - Applied Regression Analysis/galamiss.csv")
+```
+
+### Problem 4a
+
+```{r Problem 4a}
+summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=g))
+```
+
+### Problem 4b
+
+```{r Problem 4b}
+apply(apply(gm,1,is.na),1,sum)
+```
+
+We can see the `Elevation` variable contains `r sum(is.na(gm[,"Elevation"]))` missing values. This is the only variable with any missing values.
+
+### Problem 4c
+
+```{r Problem 4c}
+summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=gm))
+```
+
+There are slight differences between the original model in Problem 4a and the model where rows with missing values are deleted. We can see the adjusted $r^2$ values are very similar (`r summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=g))$adj.r.squared` vs. `r summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=gm))$adj.r.squared`) and notably, the *sign* of the coefficient for the `Nearest` variable changed (`r summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=g))$coefficients["Nearest","Estimate"]` vs. `r summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=gm))$coefficients["Nearest","Estimate"]`).
+
+### Problem 4d
+
+```{r Problem 4d}
+gmm<-gm
+for(j in 1:length(gm)){gmm[is.na(gmm[,j]),j]<-colMeans(gm,na.rm=TRUE)[j]}  # Lecture 12, Slide 8
+summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=gmm))        # Lecture 12, Slide 9
+```
+
+This model with mean value imputation may be weaker than the previous two models. We can see the adjusted $r^2$ values is lower (`r summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=gmm))$adj.r.squared` vs. `r summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=gm))$adj.r.squared` and `r summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=g))$adj.r.squared`). This may be due to some of the disadvantages of mean value imputation which are well-known through previous research (Lecture 12, Slide 10).
+
+### Problem 4e
+
+```{r Problem 4e}
+gmr<-gm
+ri<-lm(Elevation~Area+Nearest+Scruz+Adjacent,data=gm)
+gmr[is.na(gm$Elevation),"Elevation"]<-predict(ri,gm[is.na(gm$Elevation),]) # Lecture 12, Slide 11
+summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=gmr))
+```
+
+This model with regression-based imputation appears to be stronger than the model with mean value imputation. We can see the adjusted $r^2$ value is higher (`r summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=gmr))$adj.r.squared` vs. `r summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=gmm))$adj.r.squared`). While it is lower than the models without imputation from Problems 4a and 4c (`r summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=g))$adj.r.squared` and `r summary(lm(Species~Area+Elevation+Nearest+Scruz+Adjacent,data=gm))$adj.r.squared` respectively), this model may still be better because it imputes missing values rather than simply deleting their entire rows.
