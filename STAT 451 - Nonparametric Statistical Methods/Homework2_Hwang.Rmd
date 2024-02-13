@@ -1,0 +1,74 @@
+---
+title: "Homework2_Hwang"
+author: "Charles Hwang"
+date: "1/29/2022"
+output: pdf_document
+---
+Charles Hwang
+
+Dr. Perry
+
+STAT 451-001
+
+29 January 2022
+
+## Problem 1
+```{r Problem 1, warning=FALSE}
+rm(list=ls())
+library(ggplot2)
+library(ggExtra)
+library(pwr)
+library(binom)
+sleep<-sort(c(1.90,3.08,9.10,3.53,1.99,3.10,10.16,0.69,1.74,2.41,4.01,3.71,8.11,8.23,0.07,3.07))
+analysis<-data.frame(mean(sleep),median(sleep),sd(sleep),max(sleep)-min(sleep)) # Problem 1a
+names(analysis)<-c("Mean","Median","Std. Dev.","Range")
+analysis
+ggMarginal(ggplot(data.frame(sleep),aes(x=sleep))+geom_point(y=3.2)+geom_histogram(binwidth=0.5)+coord_fixed(ylim=c(0,3.25))+ggtitle("Problem 1a - Histogram with Marginal Boxplot and (Rudimentary) Dot Diagram")+labs(caption="A nonparametric test may be better for this data because they do not appear to be normally distributed.")+theme(plot.title=element_text(size=12),plot.caption=element_text(hjust=0)),type="boxplot",size=15,margins="x")
+pbinom(13,length(sleep),0.5)-pbinom(4-1,length(sleep),0.5)                      # Problem 1b
+sleep[c(qbinom(0.005,length(sleep),0.5),qbinom(0.995,length(sleep),0.5))]       # Problem 1c
+# We can see these are the 3rd and 13th values in the dataset sorted in ascending order.
+pbinom(13,length(sleep),0.5)-pbinom(3-1,length(sleep),0.5)                      # Problem 1d
+```
+
+We are approximately `r 100*(pbinom(qbinom(0.995,length(sleep),0.5),length(sleep),0.5)-pbinom(qbinom(0.005,length(sleep),0.5)-1,length(sleep),0.5))` percent confident that the true *median* percentage of sleep time spent in stage 0 for healthy males aged 50-60 is between `r sleep[qbinom(0.005,length(sleep),0.5)]` and `r sleep[qbinom(0.995,length(sleep),0.5)]` percent.
+
+## Problem 2
+```{r Problem 2}
+edu<-read.table("/Users/newuser/Desktop/Notes/Graduate/STAT 451 - Nonparametric Statistical Methods/EducationLevel.txt",header=TRUE)
+edu<-sort(as.numeric(edu$Educ_Level))
+hist(edu,main="Problem 2a - Histogram of Education Level Data") # Problem 2a
+# The data appear to be right-skew and not normally distributed.
+# H0: mu = 12.4 years                                           # Problem 2b
+# HA: mu < 12.4 years
+t.test(edu,mu=12.4,alternative="less")
+# We reject H0 at the alpha = 0.05 level. There is sufficient evidence (p = 0.03447)
+# that the mean education level is less than 12.4 years.
+pwr.t.test(d=(mean(edu)-12.4)/(sd(edu)/sqrt(length(edu))),n=length(edu),type="one.sample",alternative="less")
+median(edu) # We can see the power of this test is approximately 1 - beta = 1.00.
+# H0: m = 11                                                    # Problem 2c
+# HA: m < 11
+table(sign(edu-median(edu)))
+# We split the ties among positive and negative as evenly as possible, leaving 12 + 2 = 14
+binom.test(14,30,alternative="less") # negatives, 5 - 2*2 = 1 tie, and 13 + 2 = 15 positives.
+# We fail to reject H0 at the alpha = 0.05 level. There is insufficient
+# evidence (p = 0.4278) that the median is less than 11.
+# H0: m = 11                                                    # Problem 2d
+# HA: m < 11
+pnorm((14-length(edu)*0.5)/sqrt(length(edu)*0.5*(1-0.5)))
+# We fail to reject H0 at the alpha = 0.05 level. There is insufficient
+# evidence (p = 0.3575003) that the median is less than 11.
+pwr.norm.test(d=(14-length(edu)*0.5)/sqrt(length(edu)*0.5*(1-0.5)),n=length(edu),alternative="less")
+```
+
+We can see the power for the one-proportion $z$-test is approximately $1-\beta=$ `r pwr.norm.test(d=(14-length(edu)*0.5)/sqrt(length(edu)*0.5*(1-0.5)),n=length(edu),alternative="less")$power`.
+
+### Problem 2e
+I believe the one-sample $t$-test is the most appropriate for this data. Although we assume the population distribution is symmetric, looking at the histogram in Problem 2a, we cannot assume the same of this sample data. Since $n$ = `r length(edu)`, the Central Limit Theorem is generally applicable to this data.
+
+## Problem 3
+```{r Problem 3}
+prop.test(2,30)
+binom.confint(x=2,n=30,method=c("wilson","ac","asymptotic"))
+```
+
+We can see the proportion test method has the widest confidence interval at (`r round(prop.test(2,30)$conf.int,4)`), while the asymptotic method has the most conservative interval at (`r round(binom.confint(x=2,n=30,method="asymptotic")[c("lower","upper")],4)`). It is interesting to see how the Agresti-Coull and Wilson's adjusted intervals are not centered around $\bar{x}=\frac{2}{30}$ as one might initially think; instead, they are both centered around `r mean(as.numeric(binom.confint(x=2,n=30,method=c("wilson"))[5:6]))`, which may be due to $\bar{x}$ being so close to 0.
