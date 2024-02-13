@@ -1,0 +1,113 @@
+---
+title: "STAT 488: Multivariate Statistical Analysis — Homework 5"
+author: "Charles Hwang"
+date: "4/22/2022"
+output: pdf_document
+---
+## Problem 9.1
+
+```{r Problem 9.1}
+rm(list=ls())
+matrix(c(0.9,0.7,0.5))%*%t(matrix(c(0.9,0.7,0.5)))+matrix(c(0.19,0,0,0,0.51,0,0,0,0.75),nrow=3)
+```
+
+We can see that $\rho=$ **LL**$'+\Psi=\begin{bmatrix}.9&.7&.5\end{bmatrix}\begin{bmatrix}.9\\.7\\.5\end{bmatrix}+\begin{bmatrix}.19&0&0\\0&.51&0\\0&0&.75\end{bmatrix}=\begin{bmatrix}1&.63&.45\\.63&1&.35\\.45&.35&1\end{bmatrix}$, as intended by (9-5) on page 484 of the textbook.
+
+## Problem 9.2
+
+```{r Problem 9.2}
+(matrix(c(0.9,0.7,0.5))[1,1])^2 # (9-6), page 484  # Problem 9.2(a)
+(matrix(c(0.9,0.7,0.5))[2,1])^2
+(matrix(c(0.9,0.7,0.5))[3,1])^2
+# We can see that approximately 0.81 of the variance is explained by the first common
+# factor, approximately 0.49 of the variance is explained by the second common factor,
+# and approximately 0.25 of the variance is explained by the third common factor.
+matrix(c(0.9,0.7,0.5))[1,1]     # (9-5), page 484  # Problem 9.2(b)
+matrix(c(0.9,0.7,0.5))[2,1]
+matrix(c(0.9,0.7,0.5))[3,1]
+```
+
+We can see that $Z_1$ would likely carry the greatest weight because it has the strongest correlation (`r matrix(c(0.9,0.7,0.5))[1,1]`).
+
+## Problem 9.9
+
+### Problem 9.9(a)
+
+I personally know nothing about liquor or alcohol in general, but these three factors seem to be reasonable interpretations of the common motivations and incentives for purchasing liquor.
+
+### Problem 9.9(b)
+
+```{r Problem 9.9(b)}
+F1<-c(0.64,0.5,0.46,0.17,-0.29,-0.29,-0.49,-0.52,-0.6)
+F2<-c(0.02,-0.06,-0.24,0.74,0.66,-0.08,0.2,-0.03,-0.17)
+plot(varimax(matrix(c(F1,F2),ncol=2))$loadings,xlab="F1",ylab="F2",main="Problem 9.9(b) - F2 vs. F1 and Varimax Rotation")
+points(F1,F2,col="red")
+abline(h=0,v=0)
+legend("topright",c("Original","Rotated"),pch=1,col=c("red","black"))
+varimax(matrix(c(F1,F2),ncol=2))$loadings
+```
+
+We can see that not much rotation of the factor axes was done, and so the interpretation of the rotated loadings for $F_1$ and $F_2$ is largely the same as Stoetzel's interpretation. Thus, the two interpretations agree.
+
+## Problem 9.20
+
+```{r Problem 9.20}
+ap<-read.table("/Users/newuser/Desktop/Notes/Graduate/STAT 488 - Multivariate Statistical Analysis/T1-5.dat")[,c("V1","V2","V5","V6")]
+names(ap)<-c("Wind","Solar","NO_2","Ozone")
+cov(ap)
+L2<-t(prcomp(ap)$sdev[1:2]*t(prcomp(ap)$rotation[,c("PC1","PC2")])) # Problem 9.20(a)
+L2
+L<-factanal(factors=1,covmat=cov(ap))$loadings # Only doing m = 1   # Problem 9.20(b)
+psi<-factanal(factors=1,covmat=cov(ap))$uniquenesses
+L
+psi
+L%*%t(L)+diag(psi) # There appears to be some rounding error, at least in the diagonal.
+data.frame(L2[,"PC1"])                                              # Problem 9.20(c)
+L
+```
+
+We can see the factorization of the $m=1$ model obtained by the principal component method is different than the factorization of the $m=1$ model obtained by the maximum likelihood method. This illustrates how the two methods are different.
+
+## Problem 9.21
+
+```{r Problem 9.21}
+L2
+varimax(L2)
+varimax(L) # Since there is no m = 2 model with ML, a varimax rotation is not possible.
+plot(L2,xlab="F1",ylab="F2",main="Problem 9.21 - Varimax Rotation of Principal Component Model")
+points(varimax(L2)$loadings,col="red")
+abline(h=0,v=0)
+legend("center",c("Original","Rotated"),pch=1,col=c("black","red"))
+```
+
+We can see the varimax rotation around the origin (0,0) when using the principal component method and the solar component of $F_2$ changed significantly. $F_1$ appears to be a solar factor and $F_2$ appears to be a ozone and solar factor.
+
+## Problem 9.22
+
+```{r Problem 9.22}
+wls<-factanal(ap,1,scores="Bartlett")$scores                   # Problem 9.22(a)(i)
+reg<-factanal(ap,1,scores="regression")$scores                 # Problem 9.22(a)(ii)
+x<-matrix(rep(colMeans(ap),nrow(ap)),nrow=nrow(ap),byrow=TRUE) # Problem 9.22(b)
+pcs<-t(t(L2)%*%t(ap-x))%*%diag(1/eigen(cov(ap))$values[1:2])
+fs<-data.frame(wls,reg,pcs)
+names(fs)<-c("Weighted Least Squares","Regression","Princ. Comp. (F1)","Princ. Comp. (F2)")
+fs
+par(mfrow=c(1,2))                                              # Problem 9.22(c)
+plot(wls,reg)
+legend("topleft",legend="= 1",pch="r")
+plot(reg,pcs[,1])
+legend("topright",legend="= -0.5383868",pch="r")
+```
+
+We can see from the output that the factor scores from weighted least squares, regression, and the principal component method are different. The first plot shows a perfect positive linear relationship between the factor scores from weighted least squares and regression, negating the need to compare both to the principal component method. There is clearly a strong relationship between the two methods which makes sense because they originate from the same function. The second plot shows a moderate negative linear relationship between regression and the principal component method which indicates the principal component method is considerably different than the other two.
+
+## Problem 9.23
+
+```{r Problem 9.23}
+factanal(factors=1,covmat=cor(ap))$loadings # Using correlation matrix
+L
+factanal(factors=1,covmat=cor(ap))$uniquenesses
+psi
+```
+
+We can see that it does not make a difference whether **R** or **S** is used for obtaining the maximum-likelihood estimates for **L** and $\Psi$. In the documentation for the `factanal()` function, the information for the `covmat` argument explains: "Of course, correlation matrices are covariance matrices." However, the loadings and subsequent interpretations may be different.
