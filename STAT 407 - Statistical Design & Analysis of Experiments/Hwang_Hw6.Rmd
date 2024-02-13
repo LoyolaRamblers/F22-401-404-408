@@ -1,0 +1,200 @@
+---
+title: "Hwang_Hw6"
+author: "Charles Hwang"
+date: "12/8/2021"
+output: pdf_document
+---
+## Problem 10.6
+(a)
+```{r Problem 10.6(a)}
+rm(list=ls())
+y<-c(193,230,172,91,113,125)
+x1<-c(1.6,15.5,22,43,33,40)
+x2<-c(851,816,1058,1201,1357,1115)
+w<-lm(y~x1+x2)
+```
+
+Model: $y$ = $\beta_0$ + $\beta_1x_1$ + $\beta_2x_2$ + $\epsilon$
+
+$y$: response variable (wear of bearing)
+
+$\beta_0$: intercept term
+
+$\beta_1$: intercept term for $x_1$
+
+$x_1$: coded variable for oil viscosity
+
+$\beta_2$: intercept term for $x_2$
+
+$x_2$: coded variable for load
+
+$\epsilon$: error term
+
+(b)
+```{r Problem 10.6(b)}
+anova(w)
+# We reject the null hypothesis at the alpha = 0.05 level for the x_1 variable and fail
+# to reject the null hypothesis at the alpha = 0.05 level for the x_2 variable. There is
+# sufficient evidence (p = 0.02859) that the x_1 variable is significant in the model and
+# insufficient evidence (p = 0.1841) that the x_2 variable is significant in the model.
+summary(w)
+cat("We can see from the summary that adjusted-r^2 = ",summary(w)$adj.r.squared,". Approximately ",100*summary(w)$adj.r.squared," percent \nof the variation in the data can be explained by the model.",sep="")
+shapiro.test(w$residuals)
+# The null hypothesis was not rejected (p = 0.5155) at the alpha = 0.05 level, so the
+par(mfrow=c(2,2))                           # normality assumption appears to be met.
+plot(x1,w$residuals)
+abline(h=0)
+plot(x2,w$residuals,ylab="")
+abline(h=0)
+qqnorm(w$residuals)
+qqline(w$residuals)
+plot(w$fitted.values,w$residuals)
+abline(h=0)
+# There appears to be a slight variation in the Q-Q plot. However, it is hard to
+# accurately analyze and interpret the plots due to the small sample size.
+```
+
+(c)
+```{r Problem 10.6(c)}
+summary(w)$coefficients[,3:4]
+```
+
+We can see the intercept term is significant (p = 0.018269) at the $\alpha$ = 0.05 level, but the two regression terms $x_1$ and $x_2$ are not (p = 0.3562, p = 0.184101). This could indicate that the model is not significant.
+
+## Problem 10.12
+```{r Problem 10.12}
+rm(list=ls())
+y<-c(26,24,175,160,163,55,62,100,26,30,70,71)
+x1<-c(1,1,1.5,1.5,1.5,0.5,1.5,0.5,1,0.5,1,0.5)
+x2<-c(1,1,4,4,4,2,2,3,1.5,1.5,2.5,2.5)
+x1x1<-x1^2
+x2x2<-x2^2
+m<-lm(y~x1*x2+x1x1+x2x2)
+anova(m)
+# We reject the null hypothesis at the alpha = 0.05 level for the x_1, x_2, and x_2^2
+# variables and fail to reject the null hypothesis at the alpha = 0.05 level for the
+# x_1^2 variable and the interaction term (x_1 * x_2). There is sufficient evidence
+# (p = 0.000002, p < 0.000001, p = 0.009216) that the x_1, x_2, and x_2^2 variables are
+# significant in the model and insufficient evidence (p = 0.468283, p = 0.296857) that
+summary(m) # the x_1^2 variable and the interaction term are significant in the model.
+cat("We can see from the summary that adjusted-r^2 = ",summary(m)$adj.r.squared,". Approximately ",100*summary(m)$adj.r.squared," percent \nof the variation in the data can be explained by the model.",sep="")
+shapiro.test(m$residuals)
+# The null hypothesis was not rejected (p = 0.9192) at the alpha = 0.05 level, so the
+par(mfrow=c(2,2))                           # normality assumption appears to be met.
+plot(x1,m$residuals)
+abline(h=0)
+plot(x2,m$residuals,ylab="")
+abline(h=0)
+plot(x1x1,m$residuals)
+abline(h=0)
+plot(x2x2,m$residuals,ylab="")
+abline(h=0)
+par(mfrow=c(1,2))
+qqnorm(m$residuals)
+qqline(m$residuals)
+plot(m$fitted.values,m$residuals)
+abline(h=0)
+# There does not appear to be any variation in the Q-Q plot or residuals vs. fitted plot.
+```
+
+## Problem 15.15
+```{r Problem 15.15, message=FALSE}
+rm(list=ls())
+y<-c(46.5,45.9,49.8,46.1,44.3,48.7,49,50.1,48.5,45.2,46.3,47.1,48.9,48.2,50.3,44.7,43,51,48.1,48.6)
+x<-c(13,14,12,12,14,12,10,11,12,14,15,14,11,11,10,16,15,10,12,11)
+X<-x-mean(x)
+glue<-as.factor(rep(1:4,each=5))
+g<-aov(y~X+glue)
+library(car)
+Anova(g,type="III")
+# We reject the null hypothesis at the alpha = 0.05 level for the X variable and fail to
+# reject the null hypothesis at the alpha = 0.05 level for the glue variable. There is
+# sufficient evidence (p < 0.000001) that the X variable is significant in the model and
+# insufficient evidence (p = 0.7397) that the glue variable is significant in the model.
+ybar.adj<-vector(length=4)
+se_adj.mean<-vector(length=4)
+for(i in 1:4)
+  {
+  pred<-predict(lm(y~X+glue),new=data.frame(glue=as.factor(i),X=0),se.fit=T)
+  ybar.adj[i]<-pred$fit
+  se_adj.mean[i]<-pred$se.fit
+  }
+tau_hat<-ybar.adj-mean(y)
+prmatrix(cbind(tau_hat,ybar.adj,se_adj.mean))
+shapiro.test(g$residuals)
+bartlett.test(g$residuals~glue)
+# Neither of the null hypotheses were rejected, so the normality and equal
+plot(g$fitted.values,g$residuals) # variance assumptions appear to be met.
+abline(h=0)
+# There does not appear to be any pattern in the residuals vs. fitted plot.
+```
+
+## Problem 15.17
+```{r Problem 15.17}
+rm(list=ls())
+y<-c(68,90,98,77,88,112,94,65,74,85,118,82,73,92,80)
+x<-c(120,140,150,125,136,165,140,120,125,133,175,132,124,141,130)
+X<-x-mean(x)
+cs<-as.factor(rep(1:3,each=5)) # The factors have to be set as 1-3 for the function to work
+c<-aov(y~X+cs)
+Anova(c,type="III")
+# We reject the null hypothesis at the alpha = 0.05 level for the X variable and fail
+# to reject the null hypothesis at the alpha = 0.05 level for the cutting speed
+# variable. There is sufficient evidence (p < 0.000001) that the X variable is
+# significant in the model and insufficient evidence (p = 0.8721) that the cutting
+ybar.adj<-vector(length=3)           # speed variable is significant in the model.
+se_adj.mean<-vector(length=3)
+for(i in 1:3)
+  {
+  pred<-predict(lm(y~X+cs),new=data.frame(cs=as.factor(i),X=0),se.fit=T)
+  ybar.adj[i]<-pred$fit
+  se_adj.mean[i]<-pred$se.fit
+  }
+tau_hat<-ybar.adj-mean(y)
+prmatrix(cbind(tau_hat,ybar.adj,se_adj.mean))
+shapiro.test(c$residuals)
+bartlett.test(c$residuals~cs)
+# Neither of the null hypotheses were rejected, so the normality and equal
+plot(c$fitted.values,c$residuals) # variance assumptions appear to be met.
+abline(h=0)
+# There appears to be a slight negative quadratic pattern in the residuals vs. fitted plot.
+```
+
+## Problem 10.9
+(a)
+```{r Problem 10.9(a)}
+rm(list=ls())
+y<-c(81,89,83,91,79,87,84,90)
+conc<-c(1,1,2,2,1,1,2,2) # This is the same as rep(1:2,2,each=2)
+temp<-c(150,180,150,180,150,180,150,180) # This is the same as rep(c(150,180),4)
+X<-matrix(c(conc,temp),ncol=2)
+t(X)%*%X # X'X via matrix multiplication
+```
+
+(b)
+
+No, the matrix obtained in Problem 10.9(a) is not diagonal. We can see the (**X**$'$**X**)$_{ii}$ terms of this matrix, (**X**$'$**X**)$_{11}$ and (**X**$'$**X**)$_{22}$, are not the only terms with nonzero values.
+
+(c)
+```{r Problem 10.9(c)}
+x1c<-(conc-1.5)/0.5
+x2c<-(temp-165)/15
+Xc<-matrix(c(x1c,x2c),ncol=2)
+t(Xc)%*%Xc # X'X via matrix multiplication
+```
+
+Yes, this matrix is diagonal. We can see the (**X**$'$**X**)$_{ii}$ terms of this matrix are the only terms with nonzero values. Since the concentration and temperature variables only have two levels each (levels 1 and 2 for concentration and levels 150 and 180 for temperature), we can standardize them such that the levels are instead set as -1 and 1. This way, when we multiply **X**$'$ and **X** together, the resulting **X**$'$**X** matrix is diagonal.
+
+(d)
+```{r Problem 10.9(d)}
+x1d<-(conc-1)/1
+x2d<-(temp-150)/30
+Xd<-matrix(c(x1d,x2d),ncol=2)
+t(Xd)%*%Xd # X'X via matrix multiplication
+```
+
+No, this matrix is not diagonal. We can see the (**X**$'$**X**)$_{ii}$ terms of this matrix are not the only terms with nonzero values. The concentration and temperature variables were incorrectly standardized such that the levels are set as 0 and 1. Because 1 has a different numerical weight than 0 (i.e., $|1|\neq|0|$), the resulting **X**$'$**X** matrix is not diagonal.
+
+(e)
+
+We must exercise caution in properly coding independent variables in regression so they do not potentially have unintentional effects on the model, as evidenced in Problem 10.9(d).

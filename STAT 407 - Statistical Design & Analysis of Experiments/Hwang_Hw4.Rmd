@@ -1,0 +1,553 @@
+---
+title: "Hwang_Hw4"
+author: "Charles Hwang"
+date: "11/12/2021"
+output: pdf_document
+---
+## Problem 6.8
+
+```{r Problem 6.8, message=FALSE}
+rm(list=ls())
+A8<-c(-1,-1,1,1)
+B8<-c(-1,1,-1,1)
+I<-c(21,25,37,31)
+II<-c(22,26,39,34)
+III<-c(23,24,38,29)
+IV<-c(28,25,38,33)
+V<-c(20,29,35,30)
+VI<-c(26,27,36,35)
+ybar<-apply(data.frame(I,II,III,IV,V,VI),1,sum)/6
+par(mfrow=c(1,2))
+interaction.plot(A8,B8,ybar)
+interaction.plot(B8,A8,ybar,ylab="")
+# There appears to be interaction between the two factors.
+growth<-c(I,II,III,IV,V,VI)
+factorA8<-as.factor(rep(A8,6))
+factorB8<-as.factor(rep(B8,6))
+g<-lm(growth~factorA8*factorB8)
+anova(g)
+# We reject the null hypotheses at the alpha = 0.05 level for factor A and the
+# interaction. Even though we fail to reject the null hypothesis at the
+# alpha = 0.05 level for factor B, it is significant because we rejected the null
+# hypothesis for the interaction. There is sufficient evidence (p < 0.0001, p = 0.0004)
+# that both factors and the interaction between them are significant.
+shapiro.test(g$residuals)
+bartlett.test(g$residuals~factorA8)
+bartlett.test(g$residuals~factorB8)
+library(car)
+leveneTest(g)
+# None of the null hypotheses were rejected, so the normality and
+par(mfrow=c(2,2))  # equal variance assumptions appear to be met.
+qqnorm(g$residuals)
+qqline(g$residuals)
+plot(factorA8,g$residuals,xlab="Factor A")
+abline(h=0)
+plot(factorB8,g$residuals,xlab="Factor B")
+abline(h=0)
+plot(g$fitted.values,g$residuals)
+abline(h=0)
+# There is a slight variation in the Q-Q plot.
+```
+
+## Problem 6.15
+(a)
+```{r Problem 6.15(a)}
+I<-c(7.037,14.707,11.635,17.273,10.403,4.368,9.360,13.440,8.561,16.867,13.876,19.824,11.846,6.125,11.190,15.653)
+II<-c(6.376,15.219,12.089,17.815,10.151,4.098,9.253,12.923,8.951,17.052,13.658,19.639,12.337,5.904,10.935,15.053)
+s<-apply(data.frame(I,II),1,sum)
+names(s)<-c("(1)","a","b","ab","c","ac","bc","abc","d","ad","bd","abd","cd","acd","bcd","abcd")
+eA<-(s["a"]+s["ab"]+s["ac"]+s["abc"]+s["ad"]+s["abd"]+s["acd"]+s["abcd"]-s["(1)"]-s["b"]-s["c"]-s["bc"]-s["d"]-s["bd"]-s["cd"]-s["bcd"])/(8*2)
+eB<-(s["b"]+s["ab"]+s["bc"]+s["abc"]+s["bd"]+s["abd"]+s["bcd"]+s["abcd"]-s["(1)"]-s["a"]-s["c"]-s["ac"]-s["d"]-s["ad"]-s["cd"]-s["acd"])/(8*2)
+eC<-(s["c"]+s["ac"]+s["bc"]+s["abc"]+s["cd"]+s["acd"]+s["bcd"]+s["abcd"]-s["(1)"]-s["a"]-s["b"]-s["ab"]-s["d"]-s["ad"]-s["bd"]-s["abd"])/(8*2)
+eD<-(s["d"]+s["ad"]+s["bd"]+s["abd"]+s["cd"]+s["acd"]+s["bcd"]+s["abcd"]-s["(1)"]-s["a"]-s["b"]-s["ab"]-s["c"]-s["ac"]-s["bc"]-s["abc"])/(8*2)
+c(eA,eB,eC,eD)
+# Factors A, B, and C appear to be relatively large.
+```
+
+(b)
+```{r Problem 6.15(b)}
+A15<-as.factor(rep(c(-1,1),8))
+B15<-as.factor(rep(c(-1,1),4,each=2))
+C15<-as.factor(rep(c(-1,1),2,each=4))
+D15<-as.factor(rep(c(-1,1),each=8))
+length<-c(I,II)
+factorA<-as.factor(rep(A15,2))
+factorB<-as.factor(rep(B15,2))
+factorC<-as.factor(rep(C15,2))
+factorD<-as.factor(rep(D15,2))
+l<-lm(length~factorA*factorB*factorC*factorD)
+anova(l)
+```
+
+We reject the null hypotheses at the $\alpha$ = 0.05 level for all four factors and the interactions between factors A and B; factors A and C; and factors A, B, and C. There is sufficient evidence (p < 0.0001) that all factors and all combinations of interactions between factors A, B, and C (except the interaction between B and C) are significant.
+
+(c)
+
+Model: $\hat{y}$ = $\hat{\beta}_0$ + $\hat{\beta}_1x_1$ + $\hat{\beta}_2x_2$ + $\hat{\beta}_3x_3$ + $\hat{\beta}_4x_4$ + $\hat{\beta}_{12}x_1x_2$ + $\hat{\beta}_{13}x_1x_3$ + $\hat{\beta}_{123}x_1x_2x_3$ (Page 247)
+
+$\hat{y}$: response variable
+
+$\hat{\beta}_0$: intercept term
+
+$\hat{\beta}_1$: intercept term for $x_1$
+
+$x_1$: coded variable for pouring temperature (A)
+
+$\hat{\beta}_2$: intercept term for $x_2$
+
+$x_2$: coded variable for titanium (B)
+
+$\hat{\beta}_3$: intercept term for $x_3$
+
+$x_3$: coded variable for heat treatment method (C)
+
+$\hat{\beta}_4$: intercept term for $x_4$
+
+$x_4$: coded variable for amount of grain refiner used (D)
+
+$\hat{\beta}_{12}$: intercept term for interaction between $x_1$ and $x_2$
+
+$\hat{\beta}_{13}$: intercept term for interaction between $x_1$ and $x_3$
+
+$\hat{\beta}_{123}$: intercept term for interaction between $x_1$, $x_2$, and $x_3$
+
+```{r Problem 6.15(c)}
+x1<-as.numeric(as.character(factorA))
+x2<-as.numeric(as.character(factorB))
+x3<-as.numeric(as.character(factorC))
+x4<-as.numeric(as.character(factorD))
+summary(lm(length~x1+x2+x3+x4+x1*x2*x3))
+```
+
+(d)
+```{r Problem 6.15(d)}
+shapiro.test(l$residuals)
+bartlett.test(l$residuals~factorA)
+bartlett.test(l$residuals~factorB)
+bartlett.test(l$residuals~factorC)
+bartlett.test(l$residuals~factorD)
+# We should exercise some caution here as the null hypothesis for the Shapiro test has been
+qqnorm(l$residuals) # rejected (p = 0.0398) and the assumption of normality may be violated.
+qqline(l$residuals)
+# There is a slight variation in the Q-Q plot.
+par(mfrow=c(2,2))
+plot(factorA,l$residuals,xlab="Factor A")
+abline(h=0)
+plot(factorB,l$residuals,xlab="Factor B",ylab="")
+abline(h=0)
+plot(factorC,l$residuals,xlab="Factor C")
+abline(h=0)
+plot(factorD,l$residuals,xlab="Factor D",ylab="")
+abline(h=0)
+```
+
+(e)
+```{r Problem 6.15(e)}
+plot(l$fitted.values,l$residuals)
+abline(h=0)
+# It does not appear that any of the factors affect the variability in cracking.
+```
+
+(f)
+```{r Problem 6.15(f)}
+ybar<-apply(data.frame(I,II),1,sum)/2
+par(mfrow=c(2,2))
+interaction.plot(A15,B15,ybar)
+interaction.plot(B15,A15,ybar,ylab="")
+interaction.plot(A15,C15,ybar)
+interaction.plot(C15,A15,ybar,ylab="")
+# There appears to be interaction between pouring temperature (A) and titanium
+# content (B) as well as pouring temperature (A) and heat treatment method (C). This 
+# could mean these pairs of factors are related or associated with each other.
+lm(length~x1+x2+x3+x4+x1*x2*x3)$coefficients
+```
+
+I would recommend to use the higher levels for temperature (A) and heat treatment method (C) and the lower methods for titanium content (B) and amount of grain refiner used (D) to decrease crack length. The coefficients calculated from the linear model show the interaction between factors A and C is inversely proportional to the response variable and both factors B and D are directly proportional to the response variable. We can see from Table P6.2 on page 294 that the replicates corresponding to treatment combination "ac" have the lowest values.
+
+## Problem 6.22
+(a)
+```{r Problem 6.22(a)}
+A22<-as.factor(rep(c(-1,1),8))
+B22<-as.factor(rep(c(-1,1),4,each=2))
+C22<-as.factor(rep(c(-1,1),2,each=4))
+D22<-as.factor(rep(c(-1,1),each=8))
+U<-c(0.75,0.98,0.72,0.98,0.63,0.67,0.65,0.8,0.6,0.81,0.63,0.79,0.56,0.65,0.55,0.69) # Rearranging data
+c<-lm(U~A22*B22*C22*D22)
+anova(c)
+qq<-qqnorm(abs(c$effects[-1]),type="n") # Remove variables
+text(qq$x,qq$y,labels=names(abs(c$effects[-1])))
+abline(h=0.0625) # Arbitrary cutoff
+names(U)<-c("(1)","a","b","ab","c","ac","bc","abc","d","ad","bd","abd","cd","acd","bcd","abcd")
+eA<-(U["a"]+U["ab"]+U["ac"]+U["abc"]+U["ad"]+U["abd"]+U["acd"]+U["abcd"]-U["(1)"]-U["b"]-U["c"]-U["bc"]-U["d"]-U["bd"]-U["cd"]-U["bcd"])/(8*1)
+eB<-(U["b"]+U["ab"]+U["bc"]+U["abc"]+U["bd"]+U["abd"]+U["bcd"]+U["abcd"]-U["(1)"]-U["a"]-U["c"]-U["ac"]-U["d"]-U["ad"]-U["cd"]-U["acd"])/(8*1)
+eC<-(U["c"]+U["ac"]+U["bc"]+U["abc"]+U["cd"]+U["acd"]+U["bcd"]+U["abcd"]-U["(1)"]-U["a"]-U["b"]-U["ab"]-U["d"]-U["ad"]-U["bd"]-U["abd"])/(8*1)
+eD<-(U["d"]+U["ad"]+U["bd"]+U["abd"]+U["cd"]+U["acd"]+U["bcd"]+U["abcd"]-U["(1)"]-U["a"]-U["b"]-U["ab"]-U["c"]-U["ac"]-U["bc"]-U["abc"])/(8*1)
+c(eA,eB,eC,eD)
+# Factors A, C, and D appear to significantly affect unused error correction (UEC).
+```
+
+(b)
+```{r Problem 6.22(b)}
+d<-lm(U~A22*C22*D22) # New model
+anova(d)
+shapiro.test(d$residuals)
+bartlett.test(d$residuals~A22)
+bartlett.test(d$residuals~C22)
+bartlett.test(d$residuals~D22)
+leveneTest(d)
+# All of the null hypotheses for the Bartlett's tests and Levene's test were rejected.
+# There are clear violations of the equal variance assumptions (p = 0.01274,
+par(mfrow=c(1,3))     # p = 0.01103, p = 0.0299, p < 0.00001) in this model.
+plot(A22,d$residuals,xlab="Factor A")
+abline(h=0)
+plot(B22,d$residuals,xlab="Factor B",ylab="")
+abline(h=0)
+plot(D22,d$residuals,xlab="Factor D",ylab="")
+abline(h=0)
+par(mfrow=c(1,2))
+interaction.plot(A22,C22,U)
+interaction.plot(C22,A22,U,ylab="")
+# There appears to be interaction between laser power (A) and matrix cell size (C). This
+# could mean the two factors are related or associated with each other.
+qqnorm(d$residuals)
+qqline(d$residuals)
+plot(d$fitted.values,d$residuals)
+abline(h=0)
+```
+
+There is a slight variation in the Q-Q plot and there appears to be a slight football effect in the residuals vs. fitted values plot. The range of the response variable is [0,1] and the normality and equal variance assumptions were violated, so this is likely not the best model to use for this data.
+
+## Problem 6.26
+(a)
+```{r Problem 6.26(a)}
+A26<-as.factor(rep(c(-1,1),16))
+B26<-as.factor(rep(c(-1,1),8,each=2))
+C26<-as.factor(rep(c(-1,1),4,each=4))
+D26<-as.factor(rep(c(-1,1),2,each=8))
+E26<-as.factor(rep(c(-1,1),each=16))
+y<-c(7,9,34,55,16,20,40,60,8,10,32,50,18,21,44,61,8,12,35,52,15,22,45,65,6,10,30,53,15,20,41,63)
+s<-lm(y~A26*B26*C26*D26*E26)
+names(y)<-c("(1)","a","b","ab","c","ac","bc","abc","d","ad","bd","abd","cd","acd","bcd","abcd","e","ae","be","abe","ce","ace","bce","abce","de","ade","bde","abde","cde","acde","bcde","abcde")
+eA<-(y["a"]+y["ab"]+y["ac"]+y["abc"]+y["ad"]+y["abd"]+y["acd"]+y["abcd"]+y["ae"]+y["abe"]+y["ace"]+y["abce"]+y["ade"]+y["abde"]+y["acde"]+y["abcde"]-y["(1)"]-y["b"]-y["c"]-y["bc"]-y["d"]-y["bd"]-y["cd"]-y["bcd"]-y["e"]-y["be"]-y["ce"]-y["bce"]-y["de"]-y["bde"]-y["cde"]-y["bcde"])/(16*1)
+eB<-(y["b"]+y["ab"]+y["bc"]+y["abc"]+y["bd"]+y["abd"]+y["bcd"]+y["abcd"]+y["be"]+y["abe"]+y["bce"]+y["abce"]+y["bde"]+y["abce"]+y["abde"]+y["abcde"]-y["(1)"]-y["a"]-y["c"]-y["ac"]-y["d"]-y["ad"]-y["cd"]-y["acd"]-y["e"]-y["ae"]-y["ce"]-y["ace"]-y["de"]-y["ace"]-y["ade"]-y["acde"])/(16*1)
+eC<-(y["c"]+y["ac"]+y["bc"]+y["abc"]+y["cd"]+y["acd"]+y["bcd"]+y["abcd"]+y["ce"]+y["ace"]+y["bce"]+y["abce"]+y["cde"]+y["acde"]+y["bcde"]+y["abcde"]-y["(1)"]-y["a"]-y["b"]-y["ab"]-y["d"]-y["ad"]-y["bd"]-y["abd"]-y["e"]-y["ae"]-y["be"]-y["abe"]-y["de"]-y["ade"]-y["bde"]-y["abde"])/(16*1)
+eD<-(y["d"]+y["ad"]+y["bd"]+y["abd"]+y["cd"]+y["acd"]+y["bcd"]+y["abcd"]+y["de"]+y["ade"]+y["bde"]+y["abde"]+y["cde"]+y["acde"]+y["bcde"]+y["abcde"]-y["(1)"]-y["a"]-y["b"]-y["ab"]-y["c"]-y["ac"]-y["bc"]-y["abc"]-y["e"]-y["ae"]-y["be"]-y["abe"]-y["ce"]-y["ace"]-y["bce"]-y["abce"])/(16*1)
+eE<-(y["e"]+y["ae"]+y["be"]+y["abe"]+y["ce"]+y["ace"]+y["bce"]+y["abce"]+y["de"]+y["ade"]+y["bde"]+y["abde"]+y["cde"]+y["acde"]+y["bcde"]+y["abcde"]-y["(1)"]-y["a"]-y["b"]-y["ab"]-y["c"]-y["ac"]-y["bc"]-y["abc"]-y["d"]-y["ad"]-y["bd"]-y["abd"]-y["cd"]-y["acd"]-y["bcd"]-y["abcd"])/(16*1)
+c(eA,eB,eC,eD,eE)
+# Factors A, B, and C appear to be relatively large.
+```
+
+(b)
+```{r Problem 6.26(b)}
+anova(s)
+qq<-qqnorm(abs(s$effects[-1]),type="n") # Remove variables
+text(qq$x,qq$y,labels=names(abs(s$effects[-1])))
+abline(h=13) # Arbitrary cutoff
+t<-lm(y~A26+B26+C26+A26*B26) # New model
+anova(t)
+shapiro.test(t$residuals)
+bartlett.test(t$residuals~A26)
+bartlett.test(t$residuals~B26)
+bartlett.test(t$residuals~C26)
+# We should exercise some caution here as the null hypothesis of the Bartlett's test for
+# factor B has been rejected (p = 0.03664) and the assumption of equal variances for
+# factor B may be violated.
+```
+
+(c)
+
+Model: $\hat{y}$ = $\hat{\beta}_0$ + $\hat{\beta}_1x_1$ + $\hat{\beta}_2x_2$ + $\hat{\beta}_3x_3$ + $\hat{\beta}_{12}x_1x_2$ (Page 247)
+
+$\hat{y}$: response variable
+
+$\hat{\beta}_0$: intercept term
+
+$\hat{\beta}_1$: intercept term for $x_1$
+
+$x_1$: coded variable for aperture setting (A)
+
+$\hat{\beta}_2$: intercept term for $x_2$
+
+$x_2$: coded variable for exposure time (B)
+
+$\hat{\beta}_3$: intercept term for $x_3$
+
+$x_3$: coded variable for development time (C)
+
+$\hat{\beta}_{12}$: intercept term for interaction between $x_1$ and $x_2$
+
+```{r Problem 6.26(c)}
+x1<-as.numeric(as.character(A26))
+x2<-as.numeric(as.character(B26))
+x3<-as.numeric(as.character(C26))
+summary(lm(y~x1+x2+x3+x1*x2))
+```
+
+(d)
+```{r Problem 6.26(d)}
+qqnorm(t$residuals)
+qqline(t$residuals)
+# There is some variation in the Q-Q plot.
+```
+
+(e)
+```{r Problem 6.26(e)}
+par(mfrow=c(2,3))
+plot(t$fitted.values,t$residuals)
+abline(h=0)
+plot(A26,t$residuals,xlab="Factor A")
+abline(h=0)
+plot(B26,t$residuals,xlab="Factor B",ylab="")
+abline(h=0)
+plot(C26,t$residuals,xlab="Factor C")
+abline(h=0)
+plot(D26,t$residuals,xlab="Factor D",ylab="")
+abline(h=0)
+plot(E26,t$residuals,xlab="Factor E",ylab="")
+abline(h=0)
+# There appears to be a megaphone effect in the residuals vs. fitted values plot.
+```
+
+(f)
+```{r Problem 6.26(f)}
+par(mfrow=c(1,2))
+interaction.plot(A26,B26,y)
+interaction.plot(B26,A26,y,ylab="")
+# There appears to be interaction between aperture setting (A) and exposure time (B). This
+# could mean the two factors are related or associated with each other.
+```
+
+(g)
+
+I would recommend to use the higher levels for aperture setting (A), exposure time (B), and development time (C) to increase yield. The coefficients calculated from the linear model show these three factors and the interaction between factors A and B are directly proportional to the response variable. We can see from the bottom row of the data on page 297 that the replicates corresponding to treatment combinations with the higher levels (abc, abcd, abce, abcde) have the greatest values.
+
+(h)
+```{r Problem 6.26(h)}
+sk<-data.frame(A26[1:2^3],B26[1:2^3],as.factor(as.numeric(as.character(A26))[1:2^3]*as.numeric(as.character(B26))[1:2^3]),C26[1:2^3],y[1:8])
+names(sk)<-c("A","B","AB","C","y") # 2^k design, k = 3
+sk
+aA<-mean(c(y["a"],y["ab"],y["ac"],y["abc"]))
+rA<-max(c(y["a"],y["ab"],y["ac"],y["abc"]))-min(c(y["a"],y["ab"],y["ac"],y["abc"]))
+aB<-mean(c(y["b"],y["ab"],y["bc"],y["abc"]))
+rB<-max(c(y["b"],y["ab"],y["bc"],y["abc"]))-min(c(y["b"],y["ab"],y["bc"],y["abc"]))
+aAB<-mean(c(y["ab"],y["abc"]))
+rAB<-max(c(y["ab"],y["abc"]))-min(c(y["ab"],y["abc"]))
+aC<-mean(c(y["c"],y["ac"],y["bc"],y["abc"]))
+rC<-max(c(y["c"],y["ac"],y["bc"],y["abc"]))-min(c(y["c"],y["ac"],y["bc"],y["abc"]))
+ar<-data.frame(c(aA,rA),c(aB,rB),c(aAB,rAB),c(aC,rC))
+names(ar)<-c("A","B","AB","C")
+row.names(ar)<-(c("Average","Range"))
+ar
+```
+
+No, this "sketch" does not aid in interpreting the results of this experiment. I have no idea how this is relevant to the original data.
+
+## Problem 7.3
+```{r Problem 7.3}
+Block<-as.factor(rep(c("I","II"),each=16)) # Treating replicates as blocks
+m<-lm(length~Block+factorA*factorB*factorC*factorD) # See Problem 6.15(b) for data
+anova(m)
+# We reject the null hypotheses at the alpha = 0.05 level for all three factors and the
+# interactions between factors A and B; factors A and C; and factors A, B, and C. There is
+# sufficient evidence (p < 0.0001) that all factors and all combinations of interactions
+# between factors A, B, and C (except the interaction between B and C) are significant.
+shapiro.test(m$residuals)
+bartlett.test(m$residuals~factorA)
+bartlett.test(m$residuals~factorB)
+bartlett.test(m$residuals~factorC)
+bartlett.test(m$residuals~factorD)
+# We should exercise some caution here as the null hypothesis for the Shapiro test has been
+par(mfrow=c(2,2)) # rejected (p = 0.02465) and the assumption of normality may be violated.
+plot(factorA,m$residuals,xlab="Factor A") # See Problem 6.15(f) for interaction plots
+abline(h=0)
+plot(factorB,m$residuals,xlab="Factor B",ylab="")
+abline(h=0)
+plot(factorC,m$residuals,xlab="Factor C")
+abline(h=0)
+plot(factorD,m$residuals,xlab="Factor D",ylab="")
+abline(h=0)
+par(mfrow=c(1,2))
+qqnorm(m$residuals)
+qqline(m$residuals)
+plot(m$fitted.values,m$residuals)
+abline(h=0)
+# There is variation in the Q-Q plot.
+```
+
+## Problem 7.7
+```{r Problem 7.7}
+ABCDE<-as.numeric(as.character(A26))*as.numeric(as.character(B26))*as.numeric(as.character(C26))*as.numeric(as.character(D26))*as.numeric(as.character(E26))
+u<-lm(y~A26*B26*C26*D26+A26*B26*C26*E26+A26*B26*D26*E26+A26*C26*D26*E26+B26*C26*D26*E26+ABCDE)
+anova(u)
+qq<-qqnorm(abs(u$effects[-1]),type="n") # Remove variables
+text(qq$x,qq$y,labels=names(abs(u$effects[-1])))
+abline(h=13) # Arbitrary cutoff
+v<-lm(y~A26+B26+C26+A26*B26+ABCDE) # New model
+anova(v)
+# We reject the null hypotheses at the alpha = 0.05 level for all three factors and
+# the interaction between factors A and B. There is sufficient evidence (p < 0.0001)
+# that all factors and the interaction between factors A and B are significant.
+shapiro.test(v$residuals)
+bartlett.test(v$residuals~A26)
+bartlett.test(v$residuals~B26)
+bartlett.test(v$residuals~C26)
+bartlett.test(v$residuals~D26)
+bartlett.test(v$residuals~E26)
+# We should exercise some caution here as the null hypothesis of the Bartlett's
+# test for factor B has been rejected (p = 0.04119) and the assumption of equal
+par(mfrow=c(2,3))                     # variances for factor B may be violated.
+plot(A26,v$residuals,xlab="Factor A") # See Problem 6.26(f) for interaction plots
+abline(h=0)
+plot(B26,v$residuals,xlab="Factor B",ylab="")
+abline(h=0)
+plot(C26,v$residuals,xlab="Factor C",ylab="")
+abline(h=0)
+plot(D26,v$residuals,xlab="Factor D")
+abline(h=0)
+plot(E26,v$residuals,xlab="Factor E",ylab="")
+abline(h=0)
+par(mfrow=c(1,2))
+qqnorm(v$residuals)
+qqline(v$residuals)
+plot(v$fitted.values,v$residuals)
+abline(h=0)
+# There is some variation in the Q-Q plot and a megaphone effect in the
+# residuals vs. fitted values plot.
+```
+
+## Problem 7.9
+```{r Problem 7.9}
+ACDE<-as.numeric(as.character(A26))*as.numeric(as.character(C26))*as.numeric(as.character(D26))*as.numeric(as.character(E26))
+BCD<-as.numeric(as.character(B26))*as.numeric(as.character(C26))*as.numeric(as.character(D26))
+ABE<-as.numeric(as.character(A26))*as.numeric(as.character(B26))*as.numeric(as.character(E26))
+blocks<-factor(levels=c(1:4))
+for(i in 1:32) {
+  if(ACDE[i]==-1 & BCD[i]==-1) blocks[i]=1
+  if(ACDE[i]==1 & BCD[i]==-1) blocks[i]=2
+  if(ACDE[i]==-1 & BCD[i]==1) blocks[i]=3
+  if(ACDE[i]==1 & BCD[i]==1) blocks[i]=4
+}
+w<-lm(y~blocks+A26*B26*C26*D26*E26)
+anova(w)
+qq<-qqnorm(abs(w$effects[-1]),type="n") # Remove variables
+text(qq$x,qq$y,labels=names(abs(w$effects[-1])))
+abline(h=13) # Arbitrary cutoff
+x<-lm(y~A26+B26+C26+A26*B26+blocks) # New model
+anova(x)
+# We reject the null hypotheses at the alpha = 0.05 level for all three factors and
+# the interaction between factors A and B. There is sufficient evidence (p < 0.0001)
+# that all factors and the interaction between factors A and B are significant.
+shapiro.test(x$residuals)
+bartlett.test(x$residuals~A26)
+bartlett.test(x$residuals~B26)
+bartlett.test(x$residuals~C26)
+# We should exercise some caution here as the null hypothesis of the Bartlett's
+# test for factor B is close to being rejected (p = 0.05286). The assumption of
+par(mfrow=c(1,3))      # equal variances for factor B may be slightly violated.
+plot(A26,x$residuals,xlab="Factor A") # See Problem 6.26(f) for interaction plots
+abline(h=0)
+plot(B26,x$residuals,xlab="Factor B",ylab="")
+abline(h=0)
+plot(C26,x$residuals,xlab="Factor C",ylab="")
+abline(h=0)
+par(mfrow=c(1,2))
+qqnorm(x$residuals)
+qqline(x$residuals)
+plot(x$fitted.values,x$residuals)
+abline(h=0)
+# There is some variation in the Q-Q plot and a slight megaphone effect in the
+# residuals vs. fitted values plot.
+```
+
+## Problem 7.27
+```{r Problem 7.27}
+A27<-as.factor(rep(c(-1,1),4))
+B27<-as.factor(rep(c(-1,1),2,each=2))
+C27<-as.factor(rep(c(-1,1),each=4))
+ABC<-as.numeric(as.character(A27))*as.numeric(as.character(B27))*as.numeric(as.character(C27))
+BC<-as.numeric(as.character(B27))*as.numeric(as.character(C27))
+Rep<-as.factor(rep(c("I","II","III"),each=8))
+Block<-as.factor(c(rep(ABC/2+3/2,2),BC/2+7/2))
+a<-1:(2^3*3) # Random data
+factorA27<-as.factor(rep(A27,3))
+factorB27<-as.factor(rep(B27,3))
+factorC27<-as.factor(rep(C27,3))
+b<-lm(a~Rep+Block%in%Rep+factorA27*factorB27*factorC27)
+anova(b)
+qq<-qqnorm(abs(b$effects[-1]),type="n") # Remove variables
+text(qq$x,qq$y,labels=names(abs(b$effects[-1])))
+abline(h=1) # Arbitrary cutoff
+c<-lm(a~Rep+Block%in%Rep+factorA27+factorB27+factorC27) # New model
+anova(c)
+# We reject the null hypotheses at the alpha = 0.05 level for all three factors. There
+# is sufficient evidence (p < 0.0001) that all factors are significant.
+shapiro.test(c$residuals)
+bartlett.test(c$residuals~factorA27)
+bartlett.test(c$residuals~factorB27)
+bartlett.test(c$residuals~factorC27)
+# We should exercise some caution here as the null hypothesis for the Shapiro-Wilk test
+# has been rejected (p = 0.002716) and the assumption of normality may be violated. The
+# null hypotheses of the Bartlett's tests for factors A and B are also close to being
+# rejected (p = 0.08321, p = 0.06795) and the assumption of equal variances for
+par(mfrow=c(2,2))                   # factors A and B may be slightly violated.
+plot(factorA27,c$residuals,xlab="Factor A") # No interaction terms
+abline(h=0)
+plot(factorB27,c$residuals,xlab="Factor B",ylab="")
+abline(h=0)
+plot(factorC27,c$residuals,xlab="Factor C")
+abline(h=0)
+plot(Block,c$residuals,xlab="Block",ylab="")
+abline(h=0)
+par(mfrow=c(1,2))
+qqnorm(c$residuals)
+qqline(c$residuals)
+plot(c$fitted.values,c$residuals)
+abline(h=0)
+# There does not appear to be any distinct pattern in either the Q-Q plot or
+# residuals vs. fitted values plot.
+```
+
+## Problem 7.20 (Extra Credit)
+```{r Problem 7.20}
+A20<-as.factor(rep(c(-1,1),32)) # 2^6 factorial
+B20<-as.factor(rep(c(-1,1),16,each=2))
+C20<-as.factor(rep(c(-1,1),8,each=4))
+D20<-as.factor(rep(c(-1,1),4,each=8))
+E20<-as.factor(rep(c(-1,1),2,each=16))
+F20<-as.factor(rep(c(-1,1),each=32)) # Choosing arbitrary blocks
+ABC<-as.numeric(as.character(A20))*as.numeric(as.character(B20))*as.numeric(as.character(C20))
+DEF<-as.numeric(as.character(D20))*as.numeric(as.character(E20))*as.numeric(as.character(F20))
+blocks<-factor(levels=c(1:4))
+for(i in 1:64) {
+  if(ABC[i]==-1 & DEF[i]==-1) blocks[i]=1
+  if(ABC[i]==1 & DEF[i]==-1) blocks[i]=2
+  if(ABC[i]==-1 & DEF[i]==1) blocks[i]=3
+  if(ABC[i]==1 & DEF[i]==1) blocks[i]=4
+}
+aa<-1:2^6 # Random data
+bb<-lm(aa~blocks+A20*B20*C20*D20*E20*F20)
+anova(bb)
+qq<-qqnorm(abs(bb$effects[-1]),type="n") # Remove variables
+text(qq$x,qq$y,labels=names(abs(bb$effects[-1])))
+abline(h=1) # Arbitrary cutoff
+cc<-lm(aa~blocks+A20+B20+C20+D20+E20+F20) # New model
+anova(cc)
+par(mfrow=c(2,3))
+plot(A20,cc$residuals,xlab="Factor A") # No interaction terms
+abline(h=0)
+plot(B20,cc$residuals,xlab="Factor B",ylab="")
+abline(h=0)
+plot(C20,cc$residuals,xlab="Factor C",ylab="")
+abline(h=0)
+plot(D20,cc$residuals,xlab="Factor D")
+abline(h=0)
+plot(E20,cc$residuals,xlab="Factor E",ylab="")
+abline(h=0)
+plot(F20,cc$residuals,xlab="Factor F",ylab="")
+abline(h=0)
+par(mfrow=c(1,2))
+qqnorm(cc$residuals)
+qqline(cc$residuals)
+plot(cc$fitted.values,cc$residuals)
+abline(h=0)
+```
