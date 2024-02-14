@@ -1,7 +1,7 @@
 ### Graduate [Coursework](https://catalog.luc.edu/graduate-professional/graduate-school/arts-sciences/mathematics-statistics/applied-statistics-ms/#curriculumtext)
 #### Fall 2022
 - [STAT 401](https://www.luc.edu/math/academics/courses/gradstat/stat495statisticalconsultingcapstone) (Statistical Consulting)
-- [STAT 404](https://www.luc.edu/math/academics/courses/gradstat/math/academics/courses/math404)[^1] (Probability & Statistics)
+- [STAT 404](https://www.luc.edu/math/academics/courses/gradstat/math/academics/courses/math404) (Probability & Statistics)[^1]
 - [STAT 408](https://www.luc.edu/math/academics/courses/stat408) (Applied Regression Analysis)
 #### Summer 2022
 - [STAT 488](https://www.luc.edu/math/academics/courses/stat388) (Bayesian Statistical Methods)
