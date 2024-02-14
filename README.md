@@ -26,4 +26,6 @@
 - [STAT 405](https://www.luc.edu/math/academics/courses/gradstat/math/academics/courses/math405) (Advanced Probability)
 #### Fall 2020
 - [STAT 403](https://www.luc.edu/math/academics/courses/stat403) (SAS Programming)
+  - [Presentation](STAT%20403%20-%20SAS%20Programming/Presentation%20(Analysis%20of%20Winning%20in%20the%202019-2020%20NFL%20Regular%20Season).pdf)
+  - [Report](STAT%20403%20-%20SAS%20Programming/Report%20(Analysis%20of%20Winning%20in%20the%202019-2020%20NFL%20Regular%20Season).pdf) (Analysis of Winning in the 2019-2020 NFL Regular Season)
 [^1]: No files exist for this course because the nature of the subject led to coursework being done on paper.
