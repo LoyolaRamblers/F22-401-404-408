@@ -7,9 +7,9 @@
 ### Spring 2022
 - [STAT 410](https://www.luc.edu/math/academics/courses/stat410) (Categorical Data Analysis)
 - [STAT 451](https://www.luc.edu/math/academics/courses/gradstat/stat451appliednonparametricmethods) (Nonparametric Statistical Methods)
-- STAT 488 (Multivariate Statistical Analysis)
+- [STAT 488](http://gauss.math.luc.edu/info/courses/spring/2022/detail/#807-STAT488) (Multivariate Statistical Analysis)
 ### Summer 2022
-- STAT 488 (Bayesian Statistical Methods)
+- [STAT 488](https://www.luc.edu/math/academics/courses/stat388) (Bayesian Statistical Methods)
 ### Fall 2022
 - [STAT 401](https://www.luc.edu/math/academics/courses/gradstat/stat495statisticalconsultingcapstone) (Statistical Consulting)
 - [STAT 404](https://www.luc.edu/math/academics/courses/gradstat/math/academics/courses/math404) (Probability & Statistics)
