@@ -8,6 +8,7 @@
 #### Spring 2022
 - [STAT 410](https://www.luc.edu/math/academics/courses/stat410) (Categorical Data Analysis)
 - [STAT 451](https://www.luc.edu/math/academics/courses/gradstat/stat451appliednonparametricmethods) (Nonparametric Statistical Methods)
+  - Kaggle Analysis: ["Personal Key Indicators of Heart Disease"](https://www.kaggle.com/code/charleshwang/stat-451-project)
 - [STAT 488](http://gauss.math.luc.edu/info/courses/spring/2022/detail/#807-STAT488) (Multivariate Statistical Analysis)
 #### Fall 2021
 - [STAT 407](https://www.luc.edu/math/academics/courses/stat407) (Statistical Design & Analysis of Experiments)
