@@ -30,5 +30,5 @@
 #### Fall 2020
 - [STAT 403](https://www.luc.edu/math/academics/courses/stat403) (SAS Programming)
   - [Presentation](STAT%20403%20–%20SAS%20Programming/Project%20(Analysis%20of%20Winning%20in%20the%202019–2020%20NFL%20Regular%20Season)/Project%20Presentation.pdf)
-  - [Report](STAT%20403%20–%20SAS%20Programming/Project%20(Analysis%20of%20Winning%20in%20the%202019–2020%20NFL%20Regular%20Season)/Project%20Report.pdf) (Analysis of Winning in the 2019-2020 NFL Regular Season)
+  - [Project Report](STAT%20403%20–%20SAS%20Programming/Project%20(Analysis%20of%20Winning%20in%20the%202019–2020%20NFL%20Regular%20Season)/Project%20Report.pdf) (Analysis of Winning in the 2019-2020 NFL Regular Season)
 [^1]: No files exist for this course because the nature of the subject led to coursework being done on paper.
