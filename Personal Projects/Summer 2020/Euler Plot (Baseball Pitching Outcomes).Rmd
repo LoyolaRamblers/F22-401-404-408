@@ -1,0 +1,13 @@
+---
+title: "Possible Pitching Outcomes of a Baseball Game"
+author: "Charles Hwang"
+date: "5/23/2020"
+output: pdf_document
+---
+
+```{r setup}
+rm(list=ls())
+library(eulerr)
+set.seed(2305)
+plot(euler(c(Win=50,"No-Hitter"=1,"Win&Shutout"=10,"Win&Shutout&Facing the Minimum"=3,"Win&Shutout&No-Hitter"=3,"Win&Shutout&Facing the Minimum&No-Hitter"=3,"Win&Shutout&Facing the Minimum&No-Hitter&Perfect Game"=1,"Win&No-Hitter"=3)),main="Possible Pitching Outcomes of a Baseball Game")
+```
