@@ -36,4 +36,5 @@
 - [Map](Personal%20Projects/Summer%202020/Map%20(2020–21%20Loyola%20Basketball%20Nonconference%20Schedules).pdf) (2020–21 Loyola Basketball Nonconference Schedules)
 - [Map](Personal%20Projects/Summer%202020/Map%20(Graduate%20Programs).pdf) (Graduate Programs)
 - [Solution](Personal%20Projects/Fall%202022/September%202022%20Problem%20of%20the%20Month%20Solution.pdf) (September 2022 [Problem of the Month](https://www.luc.edu/math/problemofthemonth))
+- [Spreadsheet](Personal%20Projects/Summer%202020/Course%20Grid%2C%20Rent%2C%20and%20Program%20Spreadsheet.xlsx) (Course Grid, Apartment Rent, and Program Decision)
 [^1]: No files exist for this course because the nature of the subject led to coursework being done on paper.
