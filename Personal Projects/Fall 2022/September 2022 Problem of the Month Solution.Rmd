@@ -1,0 +1,87 @@
+---
+title: "September 2022 Problem of the Month Solution"
+author: "Charles Hwang"
+date: "9/23/2022"
+output: pdf_document
+---
+# Problem
+
+A sphere with radius $r_0=10^{-18}$ meters fits inside a quark which is currently the smallest particle known. We circumscribe a cube around this tiny sphere. We then circumscribe a sphere around the cube and call its radius $r_1$. We then circumscribe a cube around the larger sphere with radius $r_1$ and then circumscribe a sphere around this cube and call its radius $r_2$. We keep repeating the process of circumscribing a cube and then a sphere in that order. The radius of the *nth* sphere is defined as $r_n$. What is the smallest value of *n* where the radius of that sphere is larger than the radius of the observative universe of $4.4*10^{26}$ meters?
+
+# Solution
+
+We begin with our original sphere with radius $r_0=10^{-18}$ meters. When circumscribing a cube around this sphere, we can see the centers of each of the cube's six faces intersect the sphere and the length of one of the cube's edges is simply the diameter of the sphere (or twice the radius), $l=2*10^{-18}$. The radius $r_0$ is unchanged from this circumscription. However, in circumscribing a sphere around this cube, we can see each of the cube's eight vertices intersect the sphere, and the radius $r_1$ of this new sphere is larger than $r_0$. It is in our interest to find the value of $r_1$, and we can see it is half the length of one of the cube's space diagonals (the line between two vertices belonging to different faces). Thus, the length of one of the cube's space diagonals is $2r_1$. This is the longest straight-line distance that can be contained within a cube.
+
+The reader may wonder how to calculate the length of a cube's space diagonal, and it is not immediately clear upon inspection of the cube and observation of its properties, so let's first calculate the diagonal of one of the cube's faces: a square in two dimensions. This is an application of the Pythagorean theorem:
+
+$$d=\sqrt{a^2+b^2}$$
+
+where *a* and *b* are the side lengths and *d* is the diagonal. However, since the shape in question is a square, a special case of the rectangle, we know $a=b$, and the equation simplifies significantly:
+
+$d=\sqrt{a^2+(a)^2}$
+
+$d=\sqrt{2a^2}$
+
+$d=a\sqrt2$
+
+This is the length of the square's face diagonal. In considering the three-dimensional cube, we can see that we can calculate the length of the space diagonal by bisecting the cube diagonally with a rectangular plane and applying the Pythagorean theorem to its edges. The plane's longer edge is the face diagonal of the square, and thus the length of the plane's longer edge is simply the distance $d=a\sqrt2$ we just found. Defining the length of the plane's shorter edge as *c*, we can see the length of the space diagonal $d'$ is
+
+$$d'=\sqrt{(a\sqrt2)^2+c^2}$$
+
+Similar to before, we observe the shape in question is a cube, a special case of the rectangular prism, and see that $a=b=c$, again simplifying the equation significantly:
+
+$d'=\sqrt{(a\sqrt2)^2+(a)^2}$
+
+$d'=\sqrt{2a^2+a^2}$
+
+$d'=\sqrt{3a^2}$
+
+$d'=a\sqrt{3}$
+
+We now have the formula for the length of the a cube's space diagonal. Substituting the cube's edge length $l=2*10^{-18}$ for *a* and the cube's space diagonal length $2r_1$ for $d'$, we get
+
+$(2r_1)=(2*10^{-18})\sqrt3$
+
+$r_1=10^{-18}\sqrt3$
+
+Recalling that $r_0=10^{-18}$, we can see $r_1=r_0\sqrt3$. Since the above formulas remain the same regardless of size, we can also say $r_2=r_1\sqrt3, r_3=r_2\sqrt3$, etc.; or in short, $r_{i+1}=r_i\sqrt3$ $\forall$ $i\in\mathbb{N}$. Put more simply, circumscribing a cube then a sphere multiplies the radius by $\sqrt3$. Observing that $r_i=10^{-18}\sqrt3^i$ $\forall$ $i\in\mathbb{N}$, we need to find $n\ni r_n>4.4*10^{26}$, where $n\in\mathbb{N}$. In other words, we need to find the number of times *n* that we need to multiply $\sqrt3$ into $r_0=10^{-18}$ to get a value greater than $4.4*10^{26}$. This can be written as
+
+$$10^{-18}\sqrt3^n>4.4*10^{26}$$
+
+Solving the inequality, we get
+
+$\sqrt3^n>\frac{4.4*10^{26}}{10^{-18}}$
+
+$\sqrt3^n>4.4*10^{44}$
+
+$\log_{\sqrt3}(\sqrt3^n)>\log_{\sqrt3}(4.4*10^{44})$
+
+$n>\log_{\sqrt3}4.4+44\log_{\sqrt3}10$
+
+$n>$ `r log(4.4,sqrt(3))` $+$ $44$ $*$ `r log(10,sqrt(3))`
+
+$n>$ `r log(4.4*10^44,sqrt(3))`
+
+Rounding up to the next positive integer, we get $n=188$. $\square$
+
+## Check
+
+In checking our work, we want to verify that $r_{188}>4.4*10^{26}$ to confirm the radius is indeed larger, and that $r_{188-1}<4.4*10^{26}$ to confirm we have the smallest possible $n\in\mathbb{N}$. We see that
+
+$r_{188}>4.4*10^{26}$
+
+$10^{-18}\sqrt3^{188}>4.4*10^{26}$
+
+`r 10^-18*sqrt(3)^188` $>4.4*10^{26}$. $\checkmark$
+
+We also see that
+
+$r_{188-1}<4.4*10^{26}$
+
+$10^{-18}\sqrt3^{188-1}<4.4*10^{26}$
+
+`r 10^-18*sqrt(3)^(188-1)` $<4.4*10^{26}$. $\checkmark$
+
+# Answer
+
+The smallest value of *n* where the radius $r_n$ of the outermost sphere is larger than the radius of the observable universe is $n=188$. A quark needs to be circumscribed by **188** cubes and spheres in alternating order for the outermost sphere to be larger than the radius of the observable universe.
