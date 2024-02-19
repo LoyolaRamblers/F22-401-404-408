@@ -1,0 +1,167 @@
+---
+title: "Homework 2"
+author: "Charles Hwang"
+date: "9/27/2022"
+output: pdf_document
+---
+## Problem 2
+
+```{r Problem 2}
+rm(list=ls())
+g<-read.csv("/Users/newuser/Desktop/Notes/Graduate/STAT 408 - Applied Regression Analysis/teengamb.csv")
+```
+
+### Problem 2a
+
+```{r Problem 2a}
+model<-lm(gamble~sex+status+income+verbal,data=g)
+summary(model)
+```
+
+### Problem 2b
+
+```{r Problem 2b}
+summary(model)$r.squared
+```
+
+We can see from the output that $r^2=$ `r summary(model)$r.squared`. Approximately `r 100*summary(model)$r.squared` percent of variation in the response variable is explained by these four predictor variables.
+
+### Problem 2c
+
+```{r Problem 2c}
+model$residuals
+sort(model$residuals)[length(model$residuals)]
+```
+
+We can see from sorting the residuals that observation 24 has the largest positive residual (`r sort(model$residuals)[length(model$residuals)]`).
+
+### Problem 2d
+
+```{r Problem 2d}
+model$fitted.values
+cor(model$residuals,model$fitted.values)
+```
+
+We can see the correlation between the residuals and the fitted response is $r=$ `r cor(model$residuals,model$fitted.values)` $\approx0$, which is expected.
+
+### Problem 2e
+
+```{r Problem 2e}
+cor(model$residuals,g$income)
+```
+
+We can see the correlation between the residuals and the income variable is $r=$ `r cor(model$residuals,g$income)` $\approx0$, which is expected.
+
+### Problem 2f
+
+```{r Problem 2f}
+summary(model)$coefficients["sex","Estimate"] # 0 = Male; 1 = Female
+```
+
+We can see the predicted annual expenditure on gambling for a male is approximately £`r abs(summary(model)$coefficients["sex","Estimate"])` greater than the predicted annual expenditure on gambling for a female, holding all other predictors constant.
+
+## Problem 3
+
+```{r Problem 3}
+p<-read.csv("/Users/newuser/Desktop/Notes/Graduate/STAT 408 - Applied Regression Analysis/prostate.csv")
+```
+
+### Problem 3a
+
+```{r Problem 3a}
+summary(lm(lpsa~lcavol,data=p))
+summary(lm(lpsa~lcavol,data=p))$sigma
+summary(lm(lpsa~lcavol,data=p))$r.squared
+```
+
+We can see that the residual sum of squares is `r summary(lm(lpsa~lcavol,data=p))$sigma` and $r^2=$ `r summary(lm(lpsa~lcavol,data=p))$r.squared`.
+
+### Problem 3b
+
+```{r Problem 3b}
+summary(lm(lpsa~lcavol+lweight+svi+lbph+age+lcp+pgg45+gleason,data=p))
+summary(lm(lpsa~lcavol+lweight+svi+lbph+age+lcp+pgg45+gleason,data=p))$sigma
+summary(lm(lpsa~lcavol+lweight+svi+lbph+age+lcp+pgg45+gleason,data=p))$r.squared
+```
+
+We can see that the residual sum of squares is `r summary(lm(lpsa~lcavol+lweight+svi+lbph+age+lcp+pgg45+gleason,data=p))$sigma` and $r^2=$ `r summary(lm(lpsa~lcavol+lweight+svi+lbph+age+lcp+pgg45+gleason,data=p))$r.squared`.
+
+### Problem 3c
+
+```{r Problem 3c}
+summary(lm(lpsa~lcavol,data=p))$sigma
+summary(lm(lpsa~lcavol+lweight+svi+lbph+age+lcp+pgg45+gleason,data=p))$sigma
+summary(lm(lpsa~lcavol,data=p))$r.squared
+summary(lm(lpsa~lcavol+lweight+svi+lbph+age+lcp+pgg45+gleason,data=p))$r.squared
+```
+
+We observe different values of RSS and $r^2$ because the two models are different: the model from problem 3a is more basic with only one predictor variable, while the model from problem 3b is more complex with eight predictor variables. We can see the model with more predictor variables has a higher $r^2$ and a lower RSS, which is generally expected.
+
+### Problem 3d
+
+```{r Problem 3d}
+X<-model.matrix(~lcavol+lweight+svi+lbph+age+lcp+pgg45+gleason,data=p)
+Y<-matrix(p[,"lpsa"])
+solve(t(X)%*%X)%*%t(X)%*%Y
+summary(lm(lpsa~lcavol+lweight+svi+lbph+age+lcp+pgg45+gleason,data=p))$coefficients[,"Estimate"]
+```
+
+We can see the manually estimated parameters from using the design matrix are the same as the parameters calculated with the linear model, which makes sense intuitively as they are both calculating the same thing.
+
+## Problem 4
+
+```{r Problem 4}
+c<-read.csv("/Users/newuser/Desktop/Notes/Graduate/STAT 408 - Applied Regression Analysis/cheddar.csv")
+```
+
+### Problem 4a
+
+```{r Problem 4a}
+summary(lm(taste~Acetic+H2S+Lactic,data=c))
+summary(lm(taste~Acetic+H2S+Lactic,data=c))$coefficients[,"Estimate"]
+```
+
+### Problem 4b
+
+```{r Problem 4b}
+cor(lm(taste~Acetic+H2S+Lactic,data=c)$fitted.values,c$taste)
+```
+
+We can see there is a strong to very strong correlation ($r=$ `r cor(lm(taste~Acetic+H2S+Lactic,data=c)$fitted.values,c$taste)`) between the fitted values from the model and the true values from the response variable. This suggests the model predicts the response variable well.
+
+### Problem 4c
+
+```{r Problem 4c}
+summary(lm(taste~Acetic+H2S+Lactic,data=c))
+summary(lm(taste~Acetic+H2S+Lactic,data=c))$coefficients["(Intercept)","Estimate"]
+```
+
+For a cheese with no acetic acid, hydrogen sulfide, or lactic acid content, the linear regression model predicts that the average taste score produced by a panel of judges would be `r summary(lm(taste~Acetic+H2S+Lactic,data=c))$coefficients["(Intercept)","Estimate"]`. This does not make sense in the context of this problem because a cheese with no acetic acid, hydrogen sulfide, or lactic acid content would mean that it has not aged at all and likely would not be considered by judges. The negative score also likely does not make sense.
+
+## Problem 5
+
+```{r Problem 5}
+set.seed(1234)
+x<-runif(100,0,10)
+y<-3+x+x^2+rnorm(100,0,1)
+lm1<-lm(y~x)
+lm2<-lm(y~x+I(x^2))
+```
+
+### Problem 5a
+
+The code sets the seed number for random number generation (RNG) to `1234`; randomly samples `100` values from a uniform distribution $\in[0,10]$ and stores them as *x*; randomly samples `100` values from a standard normal distribution $N(0,1)$ and adds `3` to them, storing them as part of a quadratic equation $y=3+x+x^2+N(0,1)$; and fits two linear models: one of *y* on *x*, and the other of *y* on *x* and its quadratic term $x^2$. We can see that $N(0,1)$ acts as the random error term $\epsilon$ in a linear model.
+
+### Problem 5b
+
+```{r Problem 5b}
+par(mfrow=c(1,2))
+plot(lm1$residuals~lm1$fitted.values)
+plot(lm2$residuals~lm2$fitted.values)
+```
+
+We can see a clear positive quadratic pattern in the first plot. There is no clear pattern in the second plot, but there is a reverse megaphone effect and some clustering near the *y*-axis.
+
+### Problem 5c
+
+The second model is better. Patterns in residual plots indicate an inappropriate model choice, and we can see there is clearly a pattern in the first plot with the linear model, as the response variable *y* is quadratic. A linear model is not an appropriate choice for these data.

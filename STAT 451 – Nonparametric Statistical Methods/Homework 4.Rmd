@@ -1,0 +1,153 @@
+---
+title: "Homework4_Hwang"
+author: "Charles Hwang"
+date: "3/1/2022"
+output: pdf_document
+---
+Charles Hwang
+
+Dr. Perry
+
+STAT 451-001
+
+1 March 2022
+
+## Problem 1
+
+```{r Problem 1, warning=FALSE}
+rm(list=ls())
+city<-c(1,2,3,5,6,7,9)
+suburban<-c(10.5,13.5,13.5,17,17,17,20)
+rural<-c(4,8,10.5,13.5,13.5,19)
+ts<-c(city,suburban,rural)
+g<-c(rep("City",length(city)),rep("Suburban",length(suburban)),rep("Rural",length(rural)))
+# H0: mu_city = mu_suburban = mu_rural                        # Problem 1(a)
+# HA: At least one mu_i is different
+kruskal.test(ts~g)$statistic                                  # Problem 1(b)
+kruskal.test(ts~g)$p.value                                    # Problem 1(c)
+# We reject H0 at the alpha = 0.05 level. There is sufficient evidence (p = 0.002511198)
+# that at least one of the means is different.
+T<-data.frame(t.test(city,suburban)$p.value,t.test(city,rural)$p.value,t.test(suburban,rural)$p.value)
+names(T)<-c("City vs. Sub.","City vs. Rural","Sub. vs. Rural") # Problem 1(d)
+row.names(T)<-"p-value"
+T
+# We reject H0 at the alpha = 0.05 level for the difference between city and rural
+# schools and the difference between city and suburban schools. There is sufficient
+# evidence (p = 0.00003, p = 0.02371) that the mean rank test scores of seventh graders
+# of each of the two pairs of groups are different.
+# We fail to reject H0 at the alpha = 0.05 level for the difference between suburban and
+# rural schools. There is insufficient evidence (p = 0.1307) that mean rank test scores
+# of seventh graders of each of the two pairs of groups are different.
+                                                              # Problem 1(e)
+pairwise.t.test(c(city,rural),c(rep("City",length(city)),rep("Rural",length(rural))),p.adjust.method="bonferroni")
+# We reject H0 at the alpha = 0.05 level. There is sufficient evidence (p = 0.013)
+# that the mean rank test scores of seventh graders in city schools is different
+# than the mean rank test scores of seventh graders in rural schools.
+# This test would be conducted at the alpha = 0.05 / k = 0.05 level (k = 2(2-1)/2 =
+# 2(1)/2 = 1). However, the pairwise test functions in R automatically adjust the
+# p-value to test with the original level of alpha (per February 25 email).
+pairwise.wilcox.test(c(city,rural),c(rep("City",length(city)),rep("Rural",length(rural))),p.adjust.method="bonferroni")
+# We reject H0 at the alpha = 0.05 level. There is sufficient evidence (p = 0.027)
+# that the mean rank test scores of seventh graders in city schools is different
+# than the mean rank test scores of seventh graders in rural schools.
+s<-data.frame(ts,g)                                           # Problem 1(f)
+D<-matrix(NA,nrow=2500,ncol=length(table(g)))
+set.seed(103,sample.kind="Rounding")
+for(i in 1:2500){s$ts<-ts[sample(1:length(ts),length(ts))]
+D[i,1]<-TukeyHSD(aov(s$ts~g))$g["Rural-City","diff"]
+D[i,2]<-TukeyHSD(aov(s$ts~g))$g["Suburban-City","diff"]
+D[i,3]<-TukeyHSD(aov(s$ts~g))$g["Suburban-Rural","diff"]
+}
+mean(D[,1]>TukeyHSD(aov(ts~g))$g["Rural-City","diff"])
+mean(D[,2]>TukeyHSD(aov(ts~g))$g["Suburban-City","diff"])
+mean(D[,3]>TukeyHSD(aov(ts~g))$g["Suburban-Rural","diff"])
+```
+
+We reject $H_0$ at the $\alpha=0.05$ level for the difference between city and rural schools and the difference between city and suburban schools. There is sufficient evidence ($p=$ `r mean(D[,1]>TukeyHSD(aov(ts~g))$g["Rural-City","diff"])`, $p=$ `r mean(D[,2]>TukeyHSD(aov(ts~g))$g["Suburban-City","diff"])`) that the mean rank test scores of seventh graders of each of the two pairs of groups are different.
+
+We fail to reject $H_0$ at the $\alpha=0.05$ level for the difference between suburban and rural schools. There is insufficient evidence ($p=$ `r mean(D[,3]>TukeyHSD(aov(ts~g))$g["Suburban-Rural","diff"])`) that mean rank test scores of seventh graders of each of the two pairs of groups are different.
+
+## Problem 2
+
+```{r Problem 2, warning=FALSE}
+BAC<-read.csv("/Users/newuser/Desktop/Notes/Graduate/STAT 451 - Nonparametric Statistical Methods/bac_2methods.csv")
+boxplot(BAC[BAC$Method==1,"BAC"]-BAC[BAC$Method==2,"BAC"],ylim=c(-0.1,0.3),horizontal=TRUE,main="Problem 2(a) - Difference Between Method 1 and Method 2",xlab="Blood Alcohol Content (BAC)")
+abline(v=0,lty=2)
+# The boxplot is right skew with one notable statistical outlier (the maximum).
+# H0: mu_1 - mu_2 = 0  # Problem 2(b)
+# HA: mu_1 - mu_2 =/= 0
+t.test(BAC[BAC$Method==1,"BAC"],BAC[BAC$Method==2,"BAC"],paired=TRUE)
+# We reject H0 at the alpha = 0.05 level. There is sufficient evidence (p < 0.000001)
+# that the mean BAC of method 1 is different than the mean BAC of method 2.
+# H0: T_1 - T_2 = 0    # Problem 2(c)
+# HA: T_1 - T_2 =/= 0
+P<-matrix(NA,nrow=nrow(BAC),ncol=2500)
+R<-rep(0,2500)
+set.seed(76,sample.kind="Rounding")
+for(i in 1:2500){P[,i]<-sample(BAC$BAC,size=nrow(BAC),replace=FALSE)
+R[i]<-t.test(P[BAC$Method==1,i],P[BAC$Method==2,i],paired=TRUE)$estimate}
+mean(R>mean(BAC[BAC$Method==1,"BAC"])-mean(BAC[BAC$Method==2,"BAC"]))
+# We fail to reject H0 at the alpha = 0.05 level. There is insufficient evidence (p = 0.3144)
+# that the mean BAC of method 1 is different than the mean BAC of method 2.
+# H0: m_1 - m_2 = 0    # Problem 2(d)
+# HA: m_1 - m_2 =/= 0
+wilcox.test(BAC[BAC$Method==1,"BAC"],BAC[BAC$Method==2,"BAC"],paired=TRUE)
+# We reject H0 at the alpha = 0.05 level. There is sufficient evidence (p = 0.00022)
+# that the two methods are different.
+boxplot(BAC[BAC$Method==2,"BAC"],BAC[BAC$Method==1,"BAC"],BAC[,"BAC"],names=c("Method 2","Method 1","Total"),horizontal=TRUE,main="Problem 2(e) - Distribution of BAC Data",xlab="Blood Alcohol Content (BAC)")
+```
+
+### Problem 2(e)
+
+I believe the Wilcoxon Signed-Rank test is the most appropriate method. Although the paired $t$-test is robust, the BAC variable for the subsets of methods 1 and 2 as well as the whole sample do not appear to be normally distributed which is a required assumption.
+
+## Problem 3
+
+```{r Problem 3, warning=FALSE}
+CPK<-read.csv("/Users/newuser/Desktop/Notes/Graduate/STAT 451 - Nonparametric Statistical Methods/CPK.csv")
+row.names(CPK)<-CPK$Subject
+CPK<-CPK[c("Preexercise","X18.h.post","X42.h.post","Peak.CPK")]
+p<-c(CPK$Preexercise,CPK$Peak.CPK,CPK$X18.h.post,CPK$X42.h.post)
+Treatment<-as.factor(rep(c("Pre","18","42","Peak"),each=nrow(CPK)))
+Block<-as.factor(rep(1:nrow(CPK),times=length(CPK)))
+# H0: mu_pre = mu_18 = mu_42 = mu_peak                    # Problem 3(a)
+# HA: At least one mu_i is different
+Y<-data.frame(p,Treatment)
+F<-rep(NA,5000)
+set.seed(103)
+for (i in 1:5000){Y$p<-p[sample(1:length(p),length(p))]
+F[i]=anova(lm(p~Treatment+Block,data=Y))["Treatment","F value"]}
+mean(F>anova(lm(p~Treatment+Block))["Treatment","F value"])
+# We reject H0 at the alpha = 0.05 level. There is sufficient evidence (p = 0)
+# that at least one mean is different.
+# H0: m_pre = m_18 = m_42 = m_peak                        # Problem 3(b)
+# HA: At least one m_i is different
+friedman.test(p,Treatment,Block)
+# We reject H0 at the alpha = 0.05 level. There is sufficient evidence (p = 0.000034)
+# that at least one of the medians is different.
+anova(lm(p~Treatment+Block))                              # Problem 3(c)
+# We reject H0 at the alpha = 0.05 level. There is sufficient evidence (p = 0.004311)
+# that at least one of the means is different.
+# We can see that this p-value is greater than the p-values obtained from the permutation
+# test and Friedman's test, but still is below alpha = 0.05.
+pairwise.t.test(p,Treatment,p.adjust.method="bonferroni") # Problem 3(d)
+# We reject H0 at the alpha = 0.05 level for the pairwise comparisons between 18 hours
+# after exercise and the other three groups. There is sufficient evidence (p = 0.024,
+# p = 0.028, p = 0.012) that the mean plasma CPK activity 18 hours after exercise
+# is different than the mean plasma CPK activity for the other three groups.
+# We fail to reject H0 at the alpha = 0.05 level for the pairwise comparisons between
+# 42 hours after exercise and both preexercise and peak level as well as between
+# preexercise and peak level. There is insufficient evidence (p = 1, p = 1, p = 1)
+# that the mean plasma CPK activity between these pairs of groups is different.
+pairwise.wilcox.test(p,Treatment,p.adjust.method="bonferroni")
+```
+
+Since we tested at the $\alpha=0.05$ level, we should use $\alpha=\frac{0.05}{k}=\frac{0.05}{6}=0.008\overline3$ ($k=\frac{4(4-1)}{2}=\frac{4(3)}{2}=6$). However, the pairwise test functions in `R` automatically adjust the $p$-value to test with the original level of $\alpha$ (per February 25 email).
+
+We reject $H_0$ at the $\alpha=0.008\overline3$ level for the pairwise comparisons between 18 hours after exercise and the other three groups. There is sufficient evidence ($p$ = `r pairwise.wilcox.test(p,Treatment,p.adjust.method="bonferroni")$p.value["Pre","18"]`, $p$ = `r pairwise.wilcox.test(p,Treatment,p.adjust.method="bonferroni")$p.value["42","18"]`, $p$ = `r pairwise.wilcox.test(p,Treatment,p.adjust.method="bonferroni")$p.value["Peak","18"]`) that the mean plasma CPK activity 18 hours after exercise is different than the mean plasma CPK activity for the other three groups.
+
+We fail to reject $H_0$ at the $\alpha=0.008\overline3$ level for the pairwise comparisons between 42 hours after exercise and both preexercise and peak level as well as between preexercise and peak level. There is insufficient evidence ($p$ = `r pairwise.wilcox.test(p,Treatment,p.adjust.method="bonferroni")$p.value["Pre","42"]`, $p$ = `r pairwise.wilcox.test(p,Treatment,p.adjust.method="bonferroni")$p.value["Peak","42"]`, $p$ = `r pairwise.wilcox.test(p,Treatment,p.adjust.method="bonferroni")$p.value["Pre","Peak"]`) that the mean plasma CPK activity between these pairs of groups is different.
+
+## Problem 4
+
+Yes, it is *possible* to use Friedman's test on a one-way ANOVA that has equal sample sizes in each group by adding an additional blocking variable. However, Friedman's test *should not* be used in this situation because the data would have to be somewhat manipulated which could impact the test results and conclusion.

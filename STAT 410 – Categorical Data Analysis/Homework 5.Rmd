@@ -1,0 +1,141 @@
+---
+title: "Homework 5"
+author: "Charles Hwang"
+date: "3/31/2022"
+output: pdf_document
+---
+Charles Hwang
+
+Dr. Whalen
+
+STAT 410-001
+
+31 March 2022
+
+## Problem 5.2
+
+```{r Problem 5.2}
+rm(list=ls())
+sub<-read.table("/Users/newuser/Desktop/Notes/Graduate/STAT 410 - Categorical Data Analysis/Substance2.dat",header=TRUE)
+alc<-factor(rep(0:1,each=8)) # Coding each of 4 binary explanatory factors
+cig<-factor(rep(0:1,2,each=4))
+gen<-factor(rep(0:1,8))
+rac<-factor(rep(0:1,4,each=2))
+sub<-data.frame(alc,cig,gen,rac,sub$count[c(TRUE,FALSE)],sub$count[c(FALSE,TRUE)])
+names(sub)<-c("a","c","g","r","Y","N") # Separating marijuana usage and nonusage
+step(glm(Y/(Y+N)~a+c+g+r,family=binomial,weights=Y+N,data=sub))
+```
+
+We can see the AIC stepwise selection process here with the `step()` function.
+
+## Problem 5.4
+
+```{r Problem 5.4, message=FALSE, warning=FALSE}
+S<-read.table("/Users/newuser/Desktop/Notes/Graduate/STAT 410 - Categorical Data Analysis/Students.dat",header=TRUE)
+S$gender<-factor(S$gender)
+S$veg<-factor(S$veg)
+S$affil<-factor(S$affil) # 3 levels (1, 2, 3)
+# Per Campuswire discussion, it was discovered the textbook considers the ordinal
+# variables "ideol" and "relig" to be quantitative (section 11.5.3, pages 315-316).
+# Thus, they will not be coded as factors here despite having defined levels.
+S$abor<-factor(S$abor)
+S$affirm<-factor(S$affirm)
+S$life<-factor(S$life)   # 3 levels (1, 2, 3)
+i<-glm(abor~ideol,family=binomial,data=S) # Section 5.1.4 (pages 126-127)     # 5.4a
+r<-glm(abor~relig,family=binomial,data=S)                        # Step 1
+n<-glm(abor~news,family=binomial,data=S)
+h<-glm(abor~hsgpa,family=binomial,data=S)
+g<-glm(abor~gender,family=binomial,data=S)
+1-pchisq(i$null.deviance-i$deviance,i$df.null-i$df.residual) # Running LRTs   # ***
+1-pchisq(r$null.deviance-r$deviance,r$df.null-r$df.residual)                  # ***
+1-pchisq(n$null.deviance-n$deviance,n$df.null-n$df.residual)                  # **
+1-pchisq(h$null.deviance-h$deviance,h$df.null-h$df.residual)                  # " "
+1-pchisq(g$null.deviance-g$deviance,g$df.null-g$df.residual)                  # " "
+irn<-glm(abor~ideol+relig+news,family=binomial,data=S) # Adding ideol, relig, news
+step(irn,direction="backward")                                   # Step 2
+irnh<-glm(abor~ideol+relig+news+hsgpa,family=binomial,data=S)    # Step 3
+irng<-glm(abor~ideol+relig+news+gender,family=binomial,data=S)
+1-pchisq(irn$deviance-irnh$deviance,irn$df.residual-irnh$df.residual)         # *
+1-pchisq(irn$deviance-irng$deviance,irn$df.residual-irng$df.residual)         # " "
+irnhxxx<-glm(abor~ideol*relig*news*hsgpa,family=binomial,data=S) # Step 4
+irnhx<-glm(abor~ideol+relig+news+hsgpa+ideol*relig+ideol*news+ideol*hsgpa+relig*news+relig*hsgpa+news*hsgpa,family=binomial,data=S)
+1-pchisq(irnh$deviance-irnhx$deviance,irnh$df.residual-irnhx$df.residual)     # " "
+1-pchisq(irnh$deviance-irnhxxx$deviance,irnh$df.residual-irnhxxx$df.residual) # " "
+irnh # Final model: abor = ideol*(x_i) + relig*(x_r) + news*(x_n) + hsgpa*(x_h)
+library(MASS)                                                                 # 5.4b
+stepAIC(glm(abor~gender+age+hsgpa+cogpa+dhome+dres+tv+sport+news+aids+veg+ideol+relig+affirm,family=binomial,data=S))
+library(car)                                                                  # 5.4c
+yveg<-glm(veg~gender+age+hsgpa+cogpa+dhome+dres+tv+sport+news+aids+ideol+relig+abor+affirm,family=binomial,data=S)
+1-pchisq(yveg$null.deviance-yveg$deviance,yveg$df.null-yveg$df.residual)
+summary(yveg) # Section 5.3.2 (pages 137-138)
+```
+
+We can see that none of the 12 variables are statistically significant at the $\alpha=0.05$ level using the Wald test, and thus none of them would be selected when manually using the forward selection process. However, we can reason that at least some of these 12 variables are likely statistically significant in the presence of some combinations of each other, which is why the likelihood-ratio test for $H_0:\beta_1=\beta_2=\beta_3=\beta_4=\beta_5=\beta_6=\beta_7=\beta_8=\beta_9=\beta_{10}=\beta_{11}=\beta_{12}=0$ is statistically significant ($p=$ `r 1-pchisq(yveg$null.deviance-yveg$deviance,yveg$df.null-yveg$df.residual)`).
+
+## Problem 5.7
+
+Problem **5.7a** - We fail to reject $H_0$ at the $\alpha=0.05$ level. There is insufficient evidence ($p=$ `r 1-pchisq(1.3835,1)`) that the data do not come from a specified distribution.
+
+Problem **5.7b** - We can see the fitted values for AZT usage vs. nonusage, regardless of race, are significantly different (0.1496 vs. 0.2654 for white, 0.1427 vs. 0.2547 for black), which reflects the statistical significance of the AZT variable in the model ($p=0.00991$). Similarly, we can see the fitted values for race, regardless of AZT usage, are nearly the same (0.1496 vs. 0.1427 for AZT users, 0.2654 vs. 0.2547 for non-AZT users), which reflects the relative unimportance of the race variable in the model ($p=0.84755$).
+
+Problem **5.7c** - Standardized residuals are by definition adjusted for standard distributions which can make them easier to compare with one another.
+
+## Problem 5.12
+
+### Problem 5.12a
+
+We can see from the explanation in Section 5.3.1 (pages 136-137) and graph of similar data in Figure 5.2 that the data in this problem have *complete separation* and *perfect discrimination*, which makes $\hat{\beta}=\infty$.
+
+```{r Problem 5.12, warning=FALSE}
+x<-c(0,10,20,30,70,80,90,100)
+y<-rep(0:1,each=4)
+summary(glm(y~x,family=binomial))$coefficients["x",c("Estimate","Std. Error")]
+xb<-c(x,50,50) # Problem 5.12b
+yb<-c(y,0,1)
+summary(glm(yb~xb,family=binomial))$coefficients["xb",c("Estimate","Std. Error")]
+# No, I do not believe these are correct. As Section 5.3.1 explains, the data now have
+# quasi-complete separation, which still leads software to report inaccurate estimates.
+xc<-c(x,50.1,49.9)
+summary(glm(yb~xc,family=binomial))
+```
+
+We can see the estimates for $\hat{\beta}$ (`r summary(glm(yb~xc,family=binomial))$coefficients["xc","Estimate"]`) and $SE_{\hat{\beta}}$ (`r summary(glm(yb~xc,family=binomial))$coefficients["xc","Std. Error"]`) appear to be more accurate now that there is no perfect discrimination or quasi-complete separation in the data.
+
+## Problem 5.17
+
+```{r Problem 5.17}
+st<-read.table("http://users.stat.ufl.edu/~aa/cat/data/SoreThroat.dat",header=TRUE)
+glm(Y~D+T,family=gaussian(link=identity),data=st) # Problem 5.17a
+# For every 1 minute increase in the duration of the surgery, the probability of
+# a patient experiencing a sore throat upon waking up increases by approximately
+# 0.009061879.
+# Additionally, the probability of a patient experiencing a sore throat upon waking up
+# is approximately 0.3190944 lower when using a tracheal tube to secure the airway
+# as opposed to a laryngeal mask.
+glm(Y~D+T,family=binomial(link=probit),data=st)   # Problem 5.17b
+glm(Y~D+T,family=binomial(link=probit),data=st)$coefficients["D"]
+abs(glm(Y~D+T,family=binomial(link=probit),data=st)$coefficients["T"])
+```
+
+For every 1 minute increase in the duration of the surgery, the distribution of the latent variable for whether a patient experiences a sore throat upon waking up is shifted higher by approximately `r glm(Y~D+T,family=binomial(link=probit),data=st)$coefficients["D"]` standard deviations.
+
+Additionally, the distribution of the latent variable for whether a patient experiences a sore throat upon waking up is shifted lower by approximately `r abs(glm(Y~D+T,family=binomial(link=probit),data=st)$coefficients["T"])` standard deviations when using a tracheal tube to secure the airway as opposed to a laryngeal mask.
+
+## Problem 5.20
+
+```{r Problem 5.20}
+hc<-read.table("http://users.stat.ufl.edu/~aa/cat/data/Crabs.dat",header=TRUE)
+rel<-glm(y~width,family=binomial,data=hc)$coefficients
+eabx<-as.numeric(exp(rel["(Intercept)"]+rel["width"]*mean(hc$width)))
+eabx1<-as.numeric(exp(rel["(Intercept)"]+rel["width"]*(mean(hc$width)+sd(hc$width))))
+pib<-as.numeric(eabx/(1+eabx))
+pib1<-as.numeric(eabx1/(1+eabx1))
+l<-log(pib1/(1-pib1)/(pib/(1-pib)))
+d<-1+(1+l^2)*exp(5/4*l^2)/(1+exp(-l^2/4))
+ceiling((qnorm(1-0.05)+qnorm(1-0.1)*exp(-l^2/4))^2*(1+2*pib*d)/(pib*l^2)) # Round up
+par(mfrow=c(1,2))
+plot(hc$width)
+hist(hc$width)
+```
+
+This result requires the assumption that the variable for width be random and normally distributed, which it appears to be.
