@@ -31,4 +31,9 @@
 - [STAT 403](https://www.luc.edu/math/academics/courses/stat403) (SAS Programming)
   - [Presentation](STAT%20403%20–%20SAS%20Programming/Project%20(Analysis%20of%20Winning%20in%20the%202019–2020%20NFL%20Regular%20Season)/Project%20Presentation.pdf)
   - [Project Report](STAT%20403%20–%20SAS%20Programming/Project%20(Analysis%20of%20Winning%20in%20the%202019–2020%20NFL%20Regular%20Season)/Project%20Report.pdf) (Analysis of Winning in the 2019-2020 NFL Regular Season)
+#### [Personal Projects](Personal%20Projects)
+- [Euler Plot](Personal%20Projects/Summer%202020/Euler%20Plot%20(Baseball%20Pitching%20Outcomes).pdf) (Possible Pitching Outcomes of a Baseball Game)
+- [Map](Personal%20Projects/Summer%202020/Map%20(2020–21%20Loyola%20Basketball%20Nonconference%20Schedules).pdf) (2020–21 Loyola Basketball Nonconference Schedules)
+- [Map](Personal%20Projects/Summer%202020/Map%20(Graduate%20Programs).pdf) (Graduate Programs)
+- [Solution](Personal%20Projects/Fall%202022/September%202022%20Problem%20of%20the%20Month%20Solution.pdf) (September 2022 [Problem of the Month](https://www.luc.edu/math/problemofthemonth))
 [^1]: No files exist for this course because the nature of the subject led to coursework being done on paper.
