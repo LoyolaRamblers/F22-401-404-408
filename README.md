@@ -1,10 +1,10 @@
 #### Loyola University Chicago [M.S. Applied Statistics](https://catalog.luc.edu/graduate-professional/graduate-school/arts-sciences/mathematics-statistics/applied-statistics-ms/#curriculumtext), Class of 2022
 #### Fall 2022
-- [MATH/STAT 404](https://www.luc.edu/math/academics/courses/math404) (Probability & Statistics)[^1]
 - [STAT 401](https://www.luc.edu/math/academics/courses/gradstat/stat495statisticalconsultingcapstone) (Statistical Consulting)
   - [Presentation 1](STAT%20401%20–%20Statistical%20Consulting/Presentation%201%20(Loyola%20Games%20Version%202.0).pdf)
   - [Presentation 2](STAT%20401%20–%20Statistical%20Consulting/Presentation%202%20(Nonparametric%20Tests).pdf)
   - [Project Report](STAT%20401%20–%20Statistical%20Consulting/Project%20(Determining%20a%20Resource-Efficient%20Model%20for%20Residential%20Real%20Estate%20Valuation)/Project%20Report.pdf) (Determining a Resource-Efficient Model for Residential Real Estate Valuation)
+- [STAT 404](https://www.luc.edu/math/academics/courses/gradstat/math/academics/courses/math404) (Probability & Statistics I)[^1]
 - [STAT 408](https://www.luc.edu/math/academics/courses/stat408) (Applied Regression Analysis)
   - [Presentation](STAT%20408%20–%20Applied%20Regression%20Analysis/Project%20(Personal%20Key%20Indicators%20of%20Heart%20Disease)/Project%20Presentation.pdf)
 #### Summer 2022
@@ -26,7 +26,7 @@
 - [STAT 407](https://www.luc.edu/math/academics/courses/stat407) (Statistical Design & Analysis of Experiments)
   - [Project Report](STAT%20407%20–%20Statistical%20Design%20%26%20Analysis%20of%20Experiments/Project%20Report%20(Popcorn).pdf) (Popcorn)
 #### Spring 2021
-- [MATH/STAT 405](https://www.luc.edu/math/academics/courses/math405) (Advanced Probability)
+- [STAT 405](https://www.luc.edu/math/academics/courses/gradstat/math/academics/courses/math405) (Probability & Statistics II)
   - [Final Exam](STAT%20405%20–%20Advanced%20Probability/Final%20Exam.pdf)
 #### Fall 2020
 - [STAT 403](https://www.luc.edu/math/academics/courses/stat403) (SAS Programming)
