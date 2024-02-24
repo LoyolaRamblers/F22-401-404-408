@@ -1,4 +1,4 @@
-#### Loyola University Chicago [M.S. Applied Statistics](https://catalog.luc.edu/graduate-professional/graduate-school/arts-sciences/mathematics-statistics/applied-statistics-ms/#curriculumtext), Class of 2022
+#### Loyola University Chicago [M.S. Applied Statistics](https://catalog.luc.edu/graduate-professional/graduate-school/arts-sciences/mathematics-statistics/applied-statistics-ms/#curriculumtext), Class of 2022 ([Transcript](Graduate%20Transcript.pdf))
 #### Fall 2022
 - [STAT 401](https://www.luc.edu/math/academics/courses/gradstat/stat495statisticalconsultingcapstone) – Statistical Consulting
   - [Presentation 1](STAT%20401%20–%20Statistical%20Consulting/Presentation%201%20(Loyola%20Games%20Version%202.0).pdf)
