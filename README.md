@@ -32,7 +32,7 @@
 - [STAT 403](https://www.luc.edu/math/academics/courses/stat403) – SAS Programming & Applied Statistics
   - [Presentation](STAT%20403%20–%20SAS%20Programming%20%26%20Applied%20Statistics/Project%20(Analysis%20of%20Winning%20in%20the%202019–2020%20NFL%20Regular%20Season)/Project%20Presentation.pdf)
   - [Project Report](STAT%20403%20–%20SAS%20Programming%20%26%20Applied%20Statistics/Project%20(Analysis%20of%20Winning%20in%20the%202019–2020%20NFL%20Regular%20Season)/Project%20Report.pdf) (Analysis of Winning in the 2019-2020 NFL Regular Season)
-#### [Personal Projects](Personal%20Projects)
+#### Personal Projects
 - [Euler Plot](Personal%20Projects/Summer%202020/Euler%20Plot%20(Baseball%20Pitching%20Outcomes).pdf) (Possible Pitching Outcomes of a Baseball Game)
 - [Excel Spreadsheet](Personal%20Projects/Summer%202020/Course%20Grid%2C%20Rent%2C%20and%20Program%20Spreadsheet.xlsx) (Course Grid, Rent, and Program Decision)
 - [Map](Personal%20Projects/Summer%202020/Map%20(2020%20Loyola%20Women's%20Soccer%20Away%20Conference%20Matches).pdf) (2020 Loyola Women's Soccer Away Conference Matches)
