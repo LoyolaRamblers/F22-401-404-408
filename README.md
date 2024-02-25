@@ -19,13 +19,13 @@
   - [Project Report](STAT%20410%20–%20Categorical%20Data%20Analysis/Project%20(Loyola%20Games)/Project%20Report.pdf) (Loyola Games)
 - [STAT 451](https://www.luc.edu/math/academics/courses/gradstat/stat451appliednonparametricmethods) – Nonparametric Statistical Methods
   - [Kaggle Notebook](https://www.kaggle.com/code/charleshwang/stat-451-project) (Analysis of "Personal Key Indicators of Heart Disease" Dataset)
+- [STAT 488](https://www.luc.edu/math/academics/courses/stat488) – [Bayesian](http://gauss.math.luc.edu/info/courses/fall/2017/detail/#502-STAT488) Statistical Methods
+  - [Final Exam](STAT%20488%20–%20Bayesian%20Statistical%20Methods/Final%20Exam.pdf)
 - [STAT 488](https://www.luc.edu/math/academics/courses/stat488) – [Multivariate Statistical Analysis](http://gauss.math.luc.edu/info/courses/spring/2022/detail/#807-STAT488)
   - [Paper 1](STAT%20488%20–%20Multivariate%20Statistical%20Analysis/Paper%201%20(The%20NBA%20as%20an%20Evolving%20Multivariate%20System)/Paper%201.pdf) (Analysis of "The NBA as an Evolving Multivariate System")
   - [Paper 2](STAT%20488%20–%20Multivariate%20Statistical%20Analysis/Paper%202%20(Changes%20in%20the%20Type%20of%20Sports%20Activity%20Due%20to%20COVID-19)/Paper%202.pdf) (Analysis of "Changes in the Type of Sports Activity Due to COVID–19")
   - [Project 1 Report](STAT%20488%20–%20Multivariate%20Statistical%20Analysis/Project%201%20(Current%20Employees%20of%20the%20City%20of%20Chicago)/Project%201%20Report.pdf) (Current Employees of the City of Chicago)
   - [Project 2 Report](STAT%20488%20–%20Multivariate%20Statistical%20Analysis/Project%202%20(Multivariate%20Analysis%20of%20COVID-19%20Cases%2C%20Deaths%2C%20and%20Hospitalizations%20in%20the%20City%20of%20Chicago)/Project%202%20Report.pdf) (Multivariate Analysis of COVID-19 Cases, Deaths, and Hospitalizations in the City of Chicago)
-- [STAT 488](https://www.luc.edu/math/academics/courses/stat488) – [Bayesian](http://gauss.math.luc.edu/info/courses/fall/2017/detail/#502-STAT488) Statistical Methods
-  - [Final Exam](STAT%20488%20–%20Bayesian%20Statistical%20Methods/Final%20Exam.pdf)
 #### Personal Projects
 - [Euler Plot](Personal%20Projects/Summer%202020/Euler%20Plot%20(Baseball%20Pitching%20Outcomes).pdf) (Possible Pitching Outcomes of a Baseball Game)
 - [Excel Spreadsheet](Personal%20Projects/Summer%202020/Course%20Grid%2C%20Rent%2C%20and%20Program%20Spreadsheet.xlsx) (Course Grid, Rent, and Program Decision)
